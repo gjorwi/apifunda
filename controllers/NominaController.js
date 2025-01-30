@@ -6,7 +6,7 @@ var multiFunct = require('../functions/exterFunct');//multiFunc llamaddo
 exports.getNomina = function(req,res){
   getNominaInt(req,res)
   .catch(e => {
-    console.log('Problemas en el servidor ****: ' + e.message);
+    console.log('Problemas en el servidor getNomina ****: ' + e.message);
     var respuesta = {
       error: true,
       codigo: 501,

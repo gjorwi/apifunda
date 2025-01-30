@@ -9,13 +9,13 @@ module.exports = function (app) {
   .get(perdat.infoDat)
 // #####################################################################
   /////// Personas Routes
-  // app.route('/perdats')
-  //   .put(multiFunct.authenticateJWT,perdat.getPerdat)
-  //   .post(multiFunct.authenticateJWT,perdat.createPerdat);
-  // app.route('/perdats/:perdatId')
-  //   .post(multiFunct.authenticateJWT,perdat.readPerdat)
-  //   .put(multiFunct.authenticateJWT,perdat.updatePerdat)
-  //   .delete(multiFunct.authenticateJWT,perdat.deletePerdat);
+  app.route('/perdats')
+    .put(multiFunct.authenticateJWT,perdat.getPerdat)
+    .post(multiFunct.authenticateJWT,perdat.createPerdat);
+  app.route('/perdats/:perdatId')
+    .post(multiFunct.authenticateJWT,perdat.readPerdat)
+    .put(multiFunct.authenticateJWT,perdat.updatePerdat)
+    .delete(multiFunct.authenticateJWT,perdat.deletePerdat);
 // #####################################################################
 
   var user = require('../controllers/UserController');
