@@ -35,6 +35,7 @@ async function getNominaInt(req, res) {
         mensaje: 'No tiene acceso'
       };
       res.json(respuesta);
+      return
     }
     let resultFindNomina = await Nomina.find().exec();
     var respuesta = {
@@ -97,7 +98,8 @@ async function createNominaInt (req, res) {
         let nominaCod;
         let nominaName=val.nomina.toUpperCase()
         let resultFindNomina = await Nomina.findOne({nominaName:nominaName}).exec();
-        if(resultFindNomina?.length!=0){
+        console.log("Nomina: "+JSON.stringify(resultFindNomina))
+        if(resultFindNomina){
             var respuesta = {
                 error: false,
                 codigo: 200,
@@ -109,6 +111,7 @@ async function createNominaInt (req, res) {
         }
         
         let resultNominaCod = await Nomina.find().sort({nominaCod: -1}).limit(1).select({nominaCod: 1, _id:0}).exec();
+        console.log("Id para Nomina: "+JSON.stringify(resultNominaCod))
         if(resultNominaCod?.length!=0){
             nominaCod=parseInt(resultNominaCod[0]?.nominaCod)+1
             nominaCod= await multiFunct.addCeros(nominaCod,5);
@@ -126,7 +129,7 @@ async function createNominaInt (req, res) {
         var respuesta = {
             error: false,
             codigo: 200,
-            mensaje: 'Datos de la Nominaencia guardados con éxito',
+            mensaje: 'Datos de la Nomina guardados con éxito',
             respuesta:newNominaSave
         };
         res.json(respuesta);

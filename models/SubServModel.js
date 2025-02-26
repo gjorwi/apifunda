@@ -1,20 +1,20 @@
 'use strict';
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var ServSchema = new Schema({
+var SubServSchema = new Schema({
   servName: {
     type: String,
-    required: [true, 'Nombre del Servicio']
+    required: [true, 'Nombre del Sub-Servicio']
   },
   servCod: {
     type: String,
-    required: [true, 'Codigo del Servicio'],
+    required: [true, 'Codigo del Sub-Servicio'],
     unique:true
   },
-  // idEspec: {
-  //   type: mongoose.Schema.ObjectId,
-  //   ref: 'Especialidades'
-  // },
+  idServ: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Servicios'
+  },
   excentAprob: {
     type: Boolean,
     default:false
@@ -32,4 +32,4 @@ var ServSchema = new Schema({
     default:""
   },
 });
-module.exports = mongoose.model('Servicios', ServSchema);
+module.exports = mongoose.model('Subservicios', SubServSchema);

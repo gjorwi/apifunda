@@ -1,6 +1,6 @@
 'use strict';
-var mongoose = require('../models/FacturasModel'),
-factura = mongoose.model('Facturas');
+var mongoose = require('../models/AtencionesModel'),
+atenc = mongoose.model('Atenciones');
 var mongoose2 = require('../models/AgendaModel'),
 Agenda = mongoose2.model('Agendas');
 var mongoose3 = require('../models/ModPagoModel'),
@@ -30,7 +30,7 @@ exports.liquidar = function(req,res){
 }
 async function liquidarInt (req, res) {
   var prueba={
-    process:"Facturar pacientes",
+    process:"Registrar atenciones diarias de pacientes",
     modulo:"regcont",
     menuItem:21
   }
@@ -49,65 +49,82 @@ async function liquidarInt (req, res) {
     ////
     else{
         console.log("valores a liquidar: "+ JSON.stringify(req.body))
-        var val=req.body.visto
-        // console.log(JSON.stringify(val))
-        let {pacientes}=val
+        const allData=req.body.visto
+        const {pacientes,idprestdats,fechAgen,idModPago}=req.body.visto
+        console.log('PACIENTES:******'+JSON.stringify(pacientes))
+        console.log('idprestdats:******'+JSON.stringify(idprestdats))
+        console.log('fechAgen:******'+JSON.stringify(fechAgen))
+        console.log('idModPago:******'+JSON.stringify(idModPago))
+        console.log("Inicio")
+        // var respuesta = {
+        //     error: false,
+        //     codigo: 200,
+        //     mensaje: 'Liquidando',
+        //     respuesta:"Liquidando"
+        // };
+        // res.json(respuesta);
         try {
-          console.log("codServ: "+val.idservdats.servCod)
-          console.log("cedprest: "+val.idprestdats.cedPrest)
-              console.log("Inicio")
+          // console.log("codServ: "+val.idservdats.servCod)
+          // console.log("cedprest: "+val.idprestdats.cedPrest)
               let arrFactNew=[]
               let count=0;
               let numbFact=0;
               for await (let paciente of pacientes) {
                 if(paciente.confirmCit){
-                  let findNumbFact = await factura.find().sort({numbFact: -1}).limit(1).select({numbFact: 1, _id:0}).exec(); //when fail its goes to catch
+                  // let findNumbFact = await factura.find().sort({numbFact: -1}).limit(1).select({numbFact: 1, _id:0}).exec(); //when fail its goes to catch
                   count++
                   console.log("paciente: "+count)
                   // console.log(`NumbFact antes: ${countNumbFact}`)
-                  if(findNumbFact.length!=0){
-                    numbFact=parseInt(findNumbFact[0].numbFact)+1
-                    numbFact= await multiFunct.addCeros(numbFact,5);
-                  }else{
-                    numbFact=1
-                    numbFact= await multiFunct.addCeros(numbFact,5);
-                  }
+                  // if(findNumbFact.length!=0){
+                  //   numbFact=parseInt(findNumbFact[0].numbFact)+1
+                  //   numbFact= await multiFunct.addCeros(numbFact,5);
+                  // }else{
+                  //   numbFact=1
+                  //   numbFact= await multiFunct.addCeros(numbFact,5);
+                  // }
                   // countNumbFact=numbFact
                   // console.log(`NumbFact despues: ${countNumbFact}`)
                   // pacMod= await multiFunct.sortPac(pacientes,numbFact);
-                  let findCodModPago = await ModPago.findOne({status:true,cedPrest:val.idprestdats.cedPrest,servCod:val.idservdats.servCod}).select({codModPago: 1,typePag:1,costPac:1}).exec(); //when fail its goes to catch
-                  console.log(`Codigo modalidad de Pago: ${findCodModPago}`)
-                  const {_id,codModPago,typePag,costPac}=findCodModPago
-                  console.log(`Codigo modalidad de Pago _id: ${_id}`)
-                  console.log(`_id paciente afiliado/exonerado: ${paciente?.idafildats}`)
-                  var data2={
-                    numbFact:numbFact,
-                    idModPago:_id,
-                    cedPrest:val.idprestdats.cedPrest,
-                    servCod:val.idservdats.servCod,
-                    idperdats:paciente.idperdats._id,
-                    idservdats:val.idservdats._id,
-                    idprestdats:val.idprestdats._id,
-                    idafildats:paciente?.idafildats?paciente?.idafildats?._id:null,
-                    idexodats:paciente?.idexodats?paciente?.idexodats?._id:null,
-                    pacType:paciente.typePac,
-                    pacName:paciente.idperdats.nombre,
-                    fechaPer:val.fechaPer,
-                  }
-                  var newFactura= new factura(data2);
-                  console.log("Datos Seteados para Persona: "+JSON.stringify(newFactura))
-                  let newFacturaSave = await newFactura.save(); 
-                  arrFactNew.push(newFacturaSave)
-                  console.log("Datos Guardados: "+JSON.stringify(newFacturaSave))
-                  console.log("termina paciente: "+count)
+                  // let findCodModPago = await ModPago.findOne({status:true,cedPrest:val.idprestdats.cedPrest,servCod:val.idservdats.servCod}).select({codModPago: 1,typePag:1,costPac:1}).exec(); //when fail its goes to catch
+                  // console.log(`Codigo modalidad de Pago: ${findCodModPago}`)
+                  // const {_id,codModPago,typePag,costPac}=findCodModPago
+                  // console.log(`Codigo modalidad de Pago _id: ${_id}`)
+                  // console.log(`_id paciente afiliado/exonerado: ${paciente?.idafildats}`)
+                  paciente.servicios.map(async (servicio)=>{
+
+                    var data2={
+                      // numbFact:numbFact,
+                      idModPago:idModPago._id,
+                      especCod:idModPago.idEspec.especCod,
+                      especialidad:idModPago.especialidad,
+                      cedPrest:idprestdats.cedPrest,
+                      idprestdats:idprestdats._id,
+                      // idperdats:paciente.idperdats._id,
+                      servCod:servicio.idServ.servCod,
+                      subservCod:servicio.idSubServ?servicio.idSubServ.servCod:null,
+                      idserv:servicio.idServ._id,
+                      idsubserv:servicio.idSubServ?servicio.idServ._id:null,
+                      idafildats:paciente?.idafildats?paciente?.idafildats?._id:null,
+                      idexodats:paciente?.idexodats?paciente?.idexodats?._id:null,
+                      cedPac:paciente.idperdats.cedula,
+                      pacType:paciente.typePac,
+                      fechAten:allData.fechAgen,
+                    }
+                    var newFactura= new atenc(data2);
+                    console.log("Datos Seteados para ATENCIONES:====== "+JSON.stringify(newFactura))
+                    let newFacturaSave = await newFactura.save(); 
+                    arrFactNew.push(newFacturaSave)
+                    // console.log("Datos Guardados: "+JSON.stringify(newFacturaSave))
+                    // console.log("termina paciente: "+count)
+                  })
                 }
               }
-              let updateAgenda = await Agenda.findByIdAndUpdate(val._id,{proceso:"liquidado"},{new:true}).exec()
+              let updateAgenda = await Agenda.findByIdAndUpdate(allData._id,{proceso:"liquidado"},{new:true}).exec()
               console.log("final")
               var respuesta = {
                   error: false,
                   codigo: 200,
-                  mensaje: 'Factura creada con éxito',
+                  mensaje: 'Atenciones agregadas correctamente',
                   respuesta:arrFactNew
               };
               res.json(respuesta);

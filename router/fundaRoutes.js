@@ -40,6 +40,8 @@ module.exports = function (app) {
   app.route('/afiliado/:afilId')
     .post(multiFunct.authenticateJWT,afil.readAfil)
     .put(multiFunct.authenticateJWT,afil.updateAfil)
+  // app.route('/afiliadoUpdate/:afilId')
+  //   .put(multiFunct.authenticateJWT,afil.updateAfil2)
   app.route('/afiliadotit/:afilId')
     .post(multiFunct.authenticateJWT,afil.readAfilTit)
   app.route('/afilfile')
@@ -80,6 +82,17 @@ module.exports = function (app) {
     .delete(multiFunct.authenticateJWT,solExo.deleteSolExo);
 // #####################################################################
 
+  var espec = require('../controllers/EspecController');
+  /////// Servicios Routes
+  app.route('/especialidad')
+    .put(multiFunct.authenticateJWT,espec.getEspec)
+    .post(multiFunct.authenticateJWT,espec.createEspec);
+  app.route('/especcode')
+    .post(multiFunct.authenticateJWT,espec.getCodEspec);
+  // app.route('/especialidad/:servId')
+  //   // .put(multiFunct.authenticateJWT,serv.selectServ)
+  //   .delete(multiFunct.authenticateJWT,espec.deleteServ);
+// #####################################################################
   var serv = require('../controllers/ServController');
   /////// Servicios Routes
   app.route('/servicio')
@@ -91,6 +104,17 @@ module.exports = function (app) {
     // .put(multiFunct.authenticateJWT,serv.selectServ)
     .delete(multiFunct.authenticateJWT,serv.deleteServ);
 // #####################################################################
+  var subserv = require('../controllers/SubServController');
+  /////// Servicios Routes
+  app.route('/subservicio')
+    .put(multiFunct.authenticateJWT,subserv.getSubServ)
+    .post(multiFunct.authenticateJWT,subserv.createSubServ);
+  app.route('/subserviciocode')
+    .post(multiFunct.authenticateJWT,subserv.getCodSubServ);
+  app.route('/subservicio/:servId')
+    // .put(multiFunct.authenticateJWT,serv.selectServ)
+    .delete(multiFunct.authenticateJWT,subserv.deleteSubServ);
+// #####################################################################
 var modpag = require('../controllers/ModpagController');
   app.route('/modpago')
     .put(multiFunct.authenticateJWT,modpag.getMod)
@@ -99,7 +123,7 @@ var modpag = require('../controllers/ModpagController');
   app.route('/prestall')
     .put(multiFunct.authenticateJWT,modpag.getPrestAll)
 
-  app.route('/modpago/:servId')
+  app.route('/modpago/:prestId')
   .post(multiFunct.authenticateJWT,modpag.readPrest)
   // .put(multiFunct.authenticateJWT,prest.updatePrest)
   // .delete(multiFunct.authenticateJWT,prest.deletePrest);
@@ -114,6 +138,8 @@ var modpag = require('../controllers/ModpagController');
     .post(multiFunct.authenticateJWT,prest.readPrest)
     .put(multiFunct.authenticateJWT,prest.updatePrest)
     .delete(multiFunct.authenticateJWT,prest.deletePrest);
+  app.route('/prestadorespec/:especId')
+    .post(multiFunct.authenticateJWT,prest.readPrestEspec)
 // #####################################################################
 
   var agenda = require('../controllers/AgendaController');
@@ -123,6 +149,8 @@ var modpag = require('../controllers/ModpagController');
     .post(multiFunct.authenticateJWT,agenda.createAgenda);
   app.route('/agendaper')
     .put(multiFunct.authenticateJWT,agenda.getAgendaPer)
+  app.route('/agendaservpac/:agendaId')
+    .put(multiFunct.authenticateJWT,agenda.getAgendaServPac)
   app.route('/agenda/:agendaId')
     .put(multiFunct.authenticateJWT,agenda.updateAgenda)
     .post(multiFunct.authenticateJWT,agenda.deletePac)

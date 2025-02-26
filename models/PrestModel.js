@@ -14,6 +14,10 @@ var PrestSchema = new Schema({
     type: String,
     required: [true, 'Telefono del prestador']
   },
+  idEspec: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Especialidades'
+  },
   status: {
     type: Boolean,
     default:true

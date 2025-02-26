@@ -1,10 +1,10 @@
 'use strict';
-var mongoose = require('../models/ServModel'),
-Serv = mongoose.model('Servicios');
+var mongoose = require('../models/SubServModel'),
+Serv = mongoose.model('Subservicios');
 var multiFunct = require('../functions/exterFunct');//multiFunc llamaddo
 
-exports.getServ = function(req,res){
-  getServInt(req,res)
+exports.getSubServ = function(req,res){
+  getSubServInt(req,res)
   .catch(e => {
     console.log('Problemas en el servidor ****: ' + e.message);
     var respuesta = {
@@ -16,18 +16,18 @@ exports.getServ = function(req,res){
   });
 }
 
-async function getServInt(req, res) {
+async function getSubServInt(req, res) {
   console.log("ENTRO getServ")
   var prueba={
-    process:"Consultar Servicios",
-    modulo:"config",
+    process:"Consultar Sub Servicios",
+    modulo:"regcont",
     menuItem:30
   }
   if(req.body.acceso){
     ///Verificar acceso
-    // var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+    var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
     // console.log("VALOR CONTROL: "+control)
-    var control=true
+    // var control=true
     if(!control){
       var respuesta = {
         error: true,
@@ -42,7 +42,7 @@ async function getServInt(req, res) {
       var formatFech=fechNow.getFullYear()+"-"+((fechNow.getMonth()+1)<10 ? "0"+(fechNow.getMonth()+1) : (fechNow.getMonth()+1))+"-"+(fechNow.getDate()<10 ? "0"+fechNow.getDate() : fechNow.getDate())
       console.log("BUSQUEDA servicios: "+JSON.stringify(req.body))
       Serv.find({status:true}).sort({Created_date:-1})
-      .populate('idEspec')
+      .populate('idServ')
       .exec( async function (err, servdat) {
         if (err){
           var respuesta = {
@@ -94,8 +94,8 @@ async function getServInt(req, res) {
     res.json(respuesta);
   }
 };
-exports.getCodServ = function(req,res){
-  getCodServInt(req,res)
+exports.getCodSubServ = function(req,res){
+  getCodSubServInt(req,res)
   .catch(e => {
     console.log('Problemas en el servidor ****: ' + e.message);
     var respuesta = {
@@ -107,7 +107,7 @@ exports.getCodServ = function(req,res){
   });
 }
 
-async function getCodServInt(req, res) {
+async function getCodSubServInt(req, res) {
   console.log("ENTRO getServ")
   var prueba={
     process:"Consultar Servicios",
@@ -159,8 +159,8 @@ async function getCodServInt(req, res) {
   ////
 };
 
-exports.createServ = function(req,res){
-  createServInt(req,res)
+exports.createSubServ = function(req,res){
+  createSubServInt(req,res)
   .catch(e => {
     console.log('Problemas en el servidor ****: ' + e.message);
     var respuesta = {
@@ -171,7 +171,7 @@ exports.createServ = function(req,res){
     res.json(respuesta);
   });
 }
-async function createServInt (req, res) {
+async function createSubServInt (req, res) {
   var prueba={
     process:"Registrar Servicio",
     modulo:"regcont",
@@ -194,10 +194,9 @@ async function createServInt (req, res) {
       console.log(req.body)
       var val=req.body
       var data={
-        servName:val.servicio.toUpperCase(),
-        // idEspec:val.especialidad,
-        excentAprob:val.modServ,
-        servCod:val.codigo
+        servName:val.subservicio.toUpperCase(),
+        servCod:val.codigo,
+        idServ:val.servicio
       }
       var newServ= new Serv(data);
       console.log("NOSE QUE PASA: "+JSON.stringify(data))
@@ -236,8 +235,8 @@ async function createServInt (req, res) {
     res.json(respuesta);
   }
 };
-exports.deleteServ = function(req,res){
-  deleteServInt(req,res)
+exports.deleteSubServ = function(req,res){
+  deleteSubServInt(req,res)
   .catch(e => {
     console.log('Problemas en el servidor ****: ' + e.message);
     var respuesta = {
@@ -248,7 +247,7 @@ exports.deleteServ = function(req,res){
     res.json(respuesta);
   });
 }
-async function deleteServInt (req, res) {
+async function deleteSubServInt (req, res) {
   var prueba={
     process:"Eliminar Servicio",
     modulo:"actmed",

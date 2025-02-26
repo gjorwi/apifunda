@@ -1,10 +1,10 @@
 'use strict';
-var mongoose = require('../models/ServModel'),
-Serv = mongoose.model('Servicios');
+var mongoose = require('../models/EspecModel'),
+Espec = mongoose.model('Especialidades');
 var multiFunct = require('../functions/exterFunct');//multiFunc llamaddo
 
-exports.getServ = function(req,res){
-  getServInt(req,res)
+exports.getEspec = function(req,res){
+  getEspecInt(req,res)
   .catch(e => {
     console.log('Problemas en el servidor ****: ' + e.message);
     var respuesta = {
@@ -16,11 +16,11 @@ exports.getServ = function(req,res){
   });
 }
 
-async function getServInt(req, res) {
+async function getEspecInt(req, res) {
   console.log("ENTRO getServ")
   var prueba={
-    process:"Consultar Servicios",
-    modulo:"config",
+    process:"Consultar Especialidad",
+    modulo:"regcont",
     menuItem:30
   }
   if(req.body.acceso){
@@ -41,8 +41,8 @@ async function getServInt(req, res) {
       var fechNow= new Date()
       var formatFech=fechNow.getFullYear()+"-"+((fechNow.getMonth()+1)<10 ? "0"+(fechNow.getMonth()+1) : (fechNow.getMonth()+1))+"-"+(fechNow.getDate()<10 ? "0"+fechNow.getDate() : fechNow.getDate())
       console.log("BUSQUEDA servicios: "+JSON.stringify(req.body))
-      Serv.find({status:true}).sort({Created_date:-1})
-      .populate('idEspec')
+      Espec.find({status:true}).sort({Created_date:-1})
+      // .populate('idServ')
       .exec( async function (err, servdat) {
         if (err){
           var respuesta = {
@@ -61,7 +61,7 @@ async function getServInt(req, res) {
               error: false,
               codigo: 200,
               fecha:formatFech,
-              mensaje: 'No se encuentran servicios registrados',
+              mensaje: 'No se encuentran especialidades registradas',
               respuesta:servdat
             };
             res.json(respuesta);
@@ -70,7 +70,7 @@ async function getServInt(req, res) {
             var respuesta = {
               error: false,
               codigo: 200,
-              mensaje: 'Datos de servicios extraidos con exito',
+              mensaje: 'Datos de especialidades extraidas con exito',
               fecha:formatFech,
               respuesta:servdat
             };
@@ -94,23 +94,23 @@ async function getServInt(req, res) {
     res.json(respuesta);
   }
 };
-exports.getCodServ = function(req,res){
-  getCodServInt(req,res)
+exports.getCodEspec = function(req,res){
+  getCodEspecInt(req,res)
   .catch(e => {
     console.log('Problemas en el servidor ****: ' + e.message);
     var respuesta = {
       error: true,
       codigo: 501,
-      mensaje: 'Problemas Internos, Contacte con el departamento de informatica getCodServ'
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica getCodEspec'
     };
     res.json(respuesta);
   });
 }
 
-async function getCodServInt(req, res) {
+async function getCodEspecInt(req, res) {
   console.log("ENTRO getServ")
   var prueba={
-    process:"Consultar Servicios",
+    process:"Consultar codigo Especialidad",
     modulo:"config",
     menuItem:30
   }
@@ -134,11 +134,11 @@ async function getCodServInt(req, res) {
   }
   let servCod=0;
   console.log("ANTES DEL FIND")
-  let findServCode = await Serv.find().sort({servCod: -1}).limit(1).select({servCod: 1, _id:0}).exec(); //when fail its goes to catch
+  let findServCode = await Espec.find().sort({especCod: -1}).limit(1).select({especCod: 1, _id:0}).exec(); //when fail its goes to catch
   console.log("DESPUES DEL FIND: "+findServCode)
   
   if(findServCode.length!=0){
-    servCod=parseInt(findServCode[0].servCod)+1
+    servCod=parseInt(findServCode[0].especCod)+1
     servCod= await multiFunct.addCeros(servCod,4);
   }else{
     servCod=1
@@ -148,7 +148,7 @@ async function getCodServInt(req, res) {
   var respuesta = {
     error: false,
     codigo: 200,
-    mensaje: 'Datos de servicios extraidos con exito',
+    mensaje: 'Datos de codigo especialidad extraidos con exito',
     respuesta:servCod
   };
   res.json(respuesta);
@@ -159,21 +159,21 @@ async function getCodServInt(req, res) {
   ////
 };
 
-exports.createServ = function(req,res){
-  createServInt(req,res)
+exports.createEspec = function(req,res){
+  createEspecInt(req,res)
   .catch(e => {
     console.log('Problemas en el servidor ****: ' + e.message);
     var respuesta = {
       error: true,
       codigo: 501,
-      mensaje: 'Problemas Internos, Contacte con el departamento de informatica createServ'
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica createEspec'
     };
     res.json(respuesta);
   });
 }
-async function createServInt (req, res) {
+async function createEspecInt (req, res) {
   var prueba={
-    process:"Registrar Servicio",
+    process:"Registrar especialidad",
     modulo:"regcont",
     menuItem:30
   }
@@ -194,12 +194,10 @@ async function createServInt (req, res) {
       console.log(req.body)
       var val=req.body
       var data={
-        servName:val.servicio.toUpperCase(),
-        // idEspec:val.especialidad,
-        excentAprob:val.modServ,
-        servCod:val.codigo
+        especName:val.especialidad.toUpperCase(),
+        especCod:val.codigo
       }
-      var newServ= new Serv(data);
+      var newServ= new Espec(data);
       console.log("NOSE QUE PASA: "+JSON.stringify(data))
       newServ.save(async function (err, servdat) {
         console.log(err)
@@ -215,7 +213,7 @@ async function createServInt (req, res) {
           var respuesta = {
             error: false,
             codigo: 200,
-            mensaje: 'Datos del servicio guardados con exito',
+            mensaje: 'Datos de la especialidad guardados con éxito',
             respuesta:servdat
           };
           res.json(respuesta);
@@ -236,8 +234,8 @@ async function createServInt (req, res) {
     res.json(respuesta);
   }
 };
-exports.deleteServ = function(req,res){
-  deleteServInt(req,res)
+exports.deleteSubServ = function(req,res){
+  deleteSubServInt(req,res)
   .catch(e => {
     console.log('Problemas en el servidor ****: ' + e.message);
     var respuesta = {
@@ -248,7 +246,7 @@ exports.deleteServ = function(req,res){
     res.json(respuesta);
   });
 }
-async function deleteServInt (req, res) {
+async function deleteSubServInt (req, res) {
   var prueba={
     process:"Eliminar Servicio",
     modulo:"actmed",

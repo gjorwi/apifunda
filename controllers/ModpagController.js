@@ -20,12 +20,12 @@ async function getModInt(req, res) {
   console.log("ENTRO getPrest")
   var prueba={
     process:"Consultar Moddalidad de Pago",
-    modulo:"actmed",
+    modulo:"regcont",
     menuItem:31
   }
     ///Verificar acceso
-    // var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
-    // console.log("VALOR CONTROL: "+control)
+    var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+    console.log("VALOR CONTROL: "+control)
     var control=true
     if(!control){
       var respuesta = {
@@ -39,9 +39,20 @@ async function getModInt(req, res) {
     else{
       console.log("BUSQUEDA servicios: "+JSON.stringify(req.body))
       ModPag.find({status:true})
+      .populate({
+        path: 'idpresdats',
+        model: 'Prestadores',
+        populate: {
+            path: 'idEspec',
+            model: 'Especialidades'
+        }
+      })
+      .populate({
+        path: 'idEspec',
+        model: 'Especialidades'
+      })
       .populate('idservdats')
-      .populate('idpresdats')
-      .sort({Created_date:-1})
+      .sort({Created_date:1})
       .exec( async function (err, modPag) {
         if (err){
           var respuesta = {
@@ -184,8 +195,8 @@ async function createModInt (req, res) {
           var val=req.body
           console.log(`_id doctor: ${JSON.stringify(val)}`)
           var saveNewPrest;
-          await Promise.all(
-            val.servicios.map(async (servicio)=>{
+          // await Promise.all(
+          //   val.servicios.map(async (servicio)=>{
               let codModPago=0;
               let findCodModPago = await ModPag.find().sort({codModPago: -1}).limit(1).select({codModPago: 1, _id:0}).exec(); //when fail its goes to catch
               
@@ -198,10 +209,11 @@ async function createModInt (req, res) {
               }
               console.log(`CodModPago: ${codModPago}`)
               var data={
-                cedPrest:val.cedPrest,
                 idpresdats:val.idpresdats,
-                idservdats:servicio.servId,
-                servCod:servicio.servCod,
+                idEspec:val.idEspec,
+                especialidad:val.especName,
+                idEspec:val.especId,
+                servicios:val.servicios,
                 typePag:val.typePag,
                 cantPac:val.cantPac,
                 costPac:val.costPac,
@@ -212,11 +224,11 @@ async function createModInt (req, res) {
               }
               var updatevalue = { $set: dataModPago };
               var options = { new: true }
-              const resultUpdate = await ModPag.findOneAndUpdate({cedPrest:data.cedPrest,servCod:data.servCod,status:true},updatevalue,options);
+              const resultUpdate = await ModPag.findOneAndUpdate({idpresdats:data.idpresdats,idEspec:data.idEspec,status:true},updatevalue,options);
               var newModPago= new ModPag(data);
               saveNewPrest = await newModPago.save();
-            })
-          )
+          //   })
+          // )
           
           console.log('final')
           var respuesta = {
@@ -268,13 +280,13 @@ exports.readPrest = function(req,res){
 async function readPrestInt (req, res, next) {
   var prueba={
     process:"Consultar Prestadores",
-    modulo:"histmed",
-    menuItem:6
+    modulo:"regcont",
+    menuItem:31
   }
   if(req.body.acceso && req.body.moduloId){
       ///Verificar acceso
     
-      // var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+      var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
       var control=true
       if(!control){
           var respuesta = {
@@ -286,10 +298,14 @@ async function readPrestInt (req, res, next) {
       }
       ////
       else{
+        console.log("ENTRO getPrest"+req.params.prestId)
         ModPag
-          .find({idservdats:req.params.servId})
+          .findOne({idpresdats:req.params.prestId,status:true})
           // .or(idservdats)
-          .populate('idpresdats')
+          .populate({
+            path: 'servicios',
+            model: 'Servicios'
+          })
           .exec(async function (err, user) {
               if (err){
                 var respuesta = {
@@ -304,7 +320,7 @@ async function readPrestInt (req, res, next) {
                   var respuesta = {
                     error: false,
                     codigo: 200,
-                    mensaje: 'El prestador no se encuentra registrado',
+                    mensaje: 'El prestador no posee una modalidad de pago registrada',
                     respuesta:user
                   };
                   res.json(respuesta);
@@ -312,7 +328,7 @@ async function readPrestInt (req, res, next) {
                   var respuesta = {
                     error: false,
                     codigo: 200,
-                    mensaje: 'Datos de prestador extraidos con exito',
+                    mensaje: 'Datos de modalidad extraidos con exito',
                     respuesta:user
                   };
                   res.json(respuesta);

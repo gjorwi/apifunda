@@ -6,21 +6,18 @@ var ModPagoSchema = new Schema({
     type: String,
     required: [true, 'Codigo de modalidad de pago']
   },
-  cedPrest: {
-    type: String,
-    required: [true, 'Cedula del Prestador']
-  },
   idpresdats: {
     type: mongoose.Schema.ObjectId,
     ref: 'Prestadores'
   },
-  idservdats: {
+  idEspec: {
     type: mongoose.Schema.ObjectId,
-    ref: 'Servicios'
+    ref: 'Especialidades'
   },
-  servCod: {
+  servicios: [{ type: Schema.Types.ObjectId, ref: 'Servicios', required: true }],
+  especialidad: {
     type: String,
-    required: [true, 'Nombre del servicio']
+    required: [true, 'Tipo de pago']
   },
   typePag: {
     type: String,

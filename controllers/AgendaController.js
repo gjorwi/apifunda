@@ -47,7 +47,14 @@ async function getAgendaInt(req, res) {
       console.log("Fecha: "+JSON.stringify(formatFech))
       console.log("BUSQUEDA Agendas: "+JSON.stringify(req.body))
       Agend.find({status:true,fechAgen:{"$gte":formatFech},proceso:"pendiente"})
-      .populate('idservdats')
+      .populate({
+        path: 'idModPago',
+        model: 'Modalidades',
+        populate: {
+            path: 'servicios',
+            model: 'Servicios'
+        }
+      })
       .populate('idprestdats')
       .populate('pacientes.idperdats')
       .sort({fechAgen:-1})
@@ -138,7 +145,14 @@ async function getAgendaPerInt(req, res) {
       console.log("Fecha: "+JSON.stringify(formatFech))
       console.log("BUSQUEDA Agendas: "+JSON.stringify(req.body))
       Agend.find({status:true,fechAgen:formatFech,proceso:"pendiente"})
-      .populate('idservdats')
+      .populate({
+        path: 'idModPago',
+        model: 'Modalidades',
+        populate: {
+            path: 'servicios',
+            model: 'Servicios'
+        }
+      })
       .populate('idprestdats')
       .populate('pacientes.idperdats')
       .populate('pacientes.idafildats')
@@ -231,7 +245,30 @@ async function getAgendaVistInt(req, res) {
       console.log("Fecha: "+JSON.stringify(formatFech))
       console.log("BUSQUEDA Agendas: "+JSON.stringify(req.body))
       Agend.find({status:true,proceso:"visto"})
-      .populate('idservdats')
+      .populate({
+        path: 'idModPago',
+        model: 'Modalidades',
+        populate: {
+            path: 'servicios',
+            model: 'Servicios'
+        }
+      })
+      .populate({
+        path: 'idModPago',
+        model: 'Modalidades',
+        populate: {
+            path: 'idEspec',
+            model: 'Especialidades'
+        }
+      })
+      .populate({
+        path: 'pacientes.servicios.idServ',
+        model: 'Servicios'
+      })
+      .populate({
+        path: 'pacientes.servicios.idSubServ',
+        model: 'Subservicios'
+      })
       .populate('idprestdats')
       .populate('pacientes.idperdats')
       .populate('pacientes.idafildats')
@@ -337,14 +374,14 @@ async function createAgendaInt (req, res) {
                 var formatFech=DIA[newD.getDay()]+" "+newD2[2]+" de "+MESES[month-1]+" del "+newD2[0]
                 var data={
                     countPac:val.countPac,
-                    idservdats:val.servicio,
+                    idModPago:val.idModPago,
                     idprestdats:val.doctor,
                     fechAgen:val.fechAgen,
                     fechaPer:formatFech
                 }
                 var newAgend= new Agend(data);
                 console.log("Datos Set: "+JSON.stringify(newAgend))
-                let resultFind = await Agend.findOne({idservdats:data.idservdats,fechaPer:data.fechaPer,idprestdats:data.idprestdats,proceso:"pendiente"}).exec()
+                let resultFind = await Agend.findOne({idModPago:data.idModPago,fechaPer:data.fechaPer,idprestdats:data.idprestdats,proceso:"pendiente"}).exec()
                 console.log("NOSE QUE PASA: "+JSON.stringify(newAgend))
                 if(resultFind){
                     var respuesta = {
@@ -583,6 +620,81 @@ async function updateAgendaInt (req, res, next) {
           }
           
 
+        }catch(err){
+          var respuesta = {
+            error: true,
+            codigo: 501,
+            mensaje: 'Error inesperado',
+            respuesta:err
+          };
+          res.json(respuesta);
+        }
+      }
+  }else{
+      var respuesta = {
+          error: true,
+          codigo: 502,
+          mensaje: 'Faltan datos requeridos'
+      };
+      res.json(respuesta);
+  }
+};
+exports.getAgendaServPac = function(req,res){
+  getAgendaServPacInt(req,res)
+  .catch(e => {
+      console.log('Problemas en el servidor ****: ' + e.message);
+      var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica getAgendaServPac'
+      };
+      res.json(respuesta);
+  });
+}
+
+async function getAgendaServPacInt (req, res, next) {
+  var prueba={
+    process:"Asignar Servicios a Pacientes",
+    modulo:"regcont",
+    menuItem:31
+  }
+  if(req.body.acceso && req.params.agendaId ){
+      ///Verificar acceso
+      console.log("ENTRO getAgendaServPac")
+      console.log("Datos: "+JSON.stringify(req.body))
+      console.log("Datos: "+JSON.stringify(req.params))
+      var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+      // var control=true
+      if(!control){
+          var respuesta = {
+              error: true,
+              codigo: 501,
+              mensaje: 'No tiene acceso'
+          };
+          res.json(respuesta);
+      }
+      ////
+      else{
+        try{
+          const result = await Agend.updateOne(
+            { _id: req.params.agendaId, 'pacientes._id': req.body.pacienteId },
+            { $set: { 'pacientes.$.servicios': req.body.servicios } }
+          );
+          console.log("Resultado de busqueda de agenda: "+JSON.stringify(result))
+          if (result.nModified === 0) {
+              return res.json({
+                  error: true,
+                  codigo: 404,
+                  mensaje: 'Paciente no encontrado en la agenda'
+              });
+          }
+
+          res.json({
+              error: false,
+              codigo: 200,
+              mensaje: 'Servicios actualizados correctamente',
+              respuesta: result
+          });
         }catch(err){
           var respuesta = {
             error: true,

@@ -97,7 +97,10 @@ async function getRootUserInt (req, res) {
                           {index:6,valor:true},
                           {index:7,valor:true},
                           {index:12,valor:true},
-                          {index:13,valor:true}
+                          {index:13,valor:true},
+                          {index:39,valor:true},
+                          {index:40,valor:true},
+                          {index:41,valor:true}
                         ]},
                         {name:"recepcion",
                         item:[
@@ -210,7 +213,10 @@ async function getRootUserInt (req, res) {
                       {index:6,valor:true},
                       {index:7,valor:true},
                       {index:12,valor:true},
-                      {index:13,valor:true}
+                      {index:13,valor:true},
+                      {index:39,valor:true},
+                      {index:40,valor:true},
+                      {index:41,valor:true}
                     ]},
                     {name:"recepcion",
                     item:[
@@ -322,7 +328,10 @@ async function getRootUserInt (req, res) {
                     {index:6,valor:true},
                     {index:7,valor:true},
                     {index:12,valor:true},
-                    {index:13,valor:true}
+                    {index:13,valor:true},
+                    {index:39,valor:true},
+                    {index:40,valor:true},
+                    {index:41,valor:true}
                   ]},
                   {name:"recepcion",
                   item:[

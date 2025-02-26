@@ -4,19 +4,19 @@ var Schema = mongoose.Schema;
 var AgendaSchema = new Schema({
   fechAgen: {
     type: String,
-    required: [true, 'Nombre del Prestador']
-  },
-  idservdats: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'Servicios'
+    required: [true, 'Fecha de la agenda']
   },
   idprestdats: {
     type: mongoose.Schema.ObjectId,
     ref: 'Prestadores'
   },
+  idModPago: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Modalidades'
+  },
   countPac: {
     type: Number,
-    required: [true, 'Cedula del prestador']
+    required: [true, 'Cantidad de pacientes']
   },
   fechaPer: {
     type: String,
@@ -45,7 +45,21 @@ var AgendaSchema = new Schema({
       type: mongoose.Schema.ObjectId,
       ref: 'Exonerados',
       default:null
-    }
+    },
+    servicios: [{
+      idServ:{
+        type: mongoose.Schema.ObjectId,
+        ref: 'Servicios',
+        required: [true, 'Id datos de personas'],
+        default:null
+      },
+      idSubServ:{
+        type: mongoose.Schema.ObjectId,
+        ref: 'Subservicios',
+        required: [true, 'Id datos de personas'],
+        default:null
+      }
+    }],
   }],
   proceso: {
     type: String,

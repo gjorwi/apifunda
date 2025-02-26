@@ -136,6 +136,17 @@ async function createSolAfilInt (req, res) {
         var val=req.body
         
         try {
+          let resultSol= await SolAfil.findOne({afilId:val.afiCed,status:true}).exec()
+          if(resultSol){
+            var respuesta = {
+              error: false,
+              codigo: 200,
+              mensaje: 'Ya existe una solicitud registrada.',
+              respuesta:[]
+            };
+            res.json(respuesta);
+            return
+          }
           var departMod;
           if(val.depart){
             departMod = val.depart
@@ -339,9 +350,8 @@ async function updateSolAfilInt (req, res) {
             var mensaje;
             var resultFind;
             resultFind = await SolAfil.findOneAndUpdate({ afilId: req.params.solAfilId,status:true,proceso: "pendiente"},{proceso:"aprobado",respaprob:req.body.respaprob},{new:true}).exec()
+            console.log('DATOS QUE NO ENTIENDO:++++'+JSON.stringify(resultFind))
             if(!resultFindPer){
-              // let resultFind = await SolAfil.findOne({ afilId: req.params.solAfilId,status:true,proceso: "pendiente"}).exec()
-              console.log("RESULT FIND TRUE "+resultFind.afilId)
               var data={
                 cedula:resultFind.cedula,
                 nombre:resultFind.nombre,
@@ -357,6 +367,8 @@ async function updateSolAfilInt (req, res) {
                 direccion:resultFind.direccion,
                 human:true
               }
+              // let resultFind = await SolAfil.findOne({ afilId: req.params.solAfilId,status:true,proceso: "pendiente"}).exec()
+              console.log("RESULT FIND TRUE "+resultFind.afilId)
               console.log("ANTES DE GUARDAR: "+JSON.stringify(data))
               var newPerdat = new Perdat(data);
               console.log("RESULT ARREGLO PERDAT"+JSON.stringify(newPerdat))
@@ -367,6 +379,23 @@ async function updateSolAfilInt (req, res) {
               if(resultFindPer.status==false){
                 mensaje=true
               }else{
+                console.log("Direccion======:"+JSON.stringify(resultFind.direccion))
+                var data={
+                  estCiv:resultFind.estCiv,
+                  telefono:resultFind.telefono,
+                  muni:resultFind.muni,
+                  parro:resultFind.parro,
+                  sect:resultFind.sect,
+                  correo:resultFind.correo,
+                  direccion:resultFind.direccion,
+                  human:true
+                }
+                // let resultFindPer = await Perdat.findOne({ cedula: req.params.solAfilId,human:true}).exec()
+                const result = await Perdat.updateOne(
+                  { cedula: req.params.solAfilId,human:true},
+                  { $set: data }
+                );
+                console.log("RESULT UPDATE PERDAT "+JSON.stringify(result))
                 mensaje=false
               }
               _id=resultFindPer._id
@@ -384,11 +413,42 @@ async function updateSolAfilInt (req, res) {
             }else{
               console.log("Punto critico, no hay mensaje")
               console.log("ID: "+req.params.solAfilId)
-              // let resultFind = await SolAfil.findOneAndUpdate({ afilId: req.params.solAfilId,status:true,proceso: "pendiente"},{proceso:"aprobado",respaprob:req.body.respaprob},{new:true}).exec()
-              console.log("RESULT FIND TRUE "+resultFind)
+              let resultFindAfiliado = await Afil.findOne({ afilId: req.params.solAfilId,status:true}).exec()
+              let resultFindAfiliado2 = await Afil.find({ afilId: req.params.solAfilId,status:true}).exec()
+              console.log("RESULT FIND Afiliado "+resultFindAfiliado)
+              console.log("RESULT FIND Afiliado2 "+resultFindAfiliado2)
               console.log("llego aqui: "+JSON.stringify(resultFind))
               resultFind.idperdats=_id
-              let resultFindPerdats = await Perdat.findOne({ cedula: resultFind.cedtit,status:true}).exec()
+              let resultFindPerdats = await Perdat.findOne({ cedula: resultFind.cedtit}).exec()
+              
+              if(resultFindAfiliado){
+                console.log('+++++Datos ANTES DEL UPDATE AFILIADO:+++'+JSON.stringify(data2))
+                console.log("ID: "+req.params.solAfilId)
+                let resultFindAfiliadoUpdate = await Afil.findOne({ afilId: req.params.solAfilId}).exec()
+                console.log(JSON.stringify(resultFindAfiliadoUpdate))
+                resultFindAfiliadoUpdate.depend=resultFind.depend
+                resultFindAfiliadoUpdate.nomi=resultFind.nomi
+                resultFindAfiliadoUpdate.depart=resultFind.depart
+                resultFindAfiliadoUpdate.type=resultFind.type
+                resultFindAfiliadoUpdate.cedpad=resultFind.cedpad
+                resultFindAfiliadoUpdate.cedmad=resultFind.cedmad
+                resultFindAfiliadoUpdate.cedtit=resultFind.cedtit
+                resultFindAfiliadoUpdate.idtitdats=resultFindPerdats._id
+                resultFindAfiliadoUpdate.parent=resultFind.parent
+                resultFindAfiliadoUpdate.fechinglab=resultFind.fechinglab
+                resultFindAfiliadoUpdate.reqdocanex=resultFind.reqdocanex
+                resultFindAfiliadoUpdate.docanex=resultFind.docanex
+                resultFindAfiliadoUpdate.obs=resultFind.obs
+                resultFindAfiliadoUpdate.Updated_date=new Date()
+                const result=await resultFindAfiliadoUpdate.save()
+                // const result = await Afil.findOneAndUpdate(
+                //   { afilId: req.params.solAfilId,human:true},
+                //   { $set: data2 },
+                //   { new: true }
+                // );
+                // console.log('+++++Datos del UPDATE AFILIADO:+++'+JSON.stringify(result))
+                console.log('+++++Datos del UPDATE AFILIADO:+++'+JSON.stringify(result))
+              }else{
                 var data2={
                   afilId:resultFind.afilId,
                   idperdats:resultFind.idperdats,
@@ -404,20 +464,21 @@ async function updateSolAfilInt (req, res) {
                   fechinglab:resultFind.fechinglab,
                   reqdocanex:resultFind.reqdocanex,
                   docanex:resultFind.docanex,
-                  obs:resultFind.obs
+                  obs:resultFind.obs,
+                  Updated_date:new Date()
                 }
-                
                 var newAfil = new Afil(data2);
                 console.log("RESULT ARREGLO afil"+JSON.stringify(newAfil))
                 let resultSaveAfil = await newAfil.save()
-                var respuesta = {
-                  error: false,
-                  codigo: 200,
-                  mensaje: 'La solicitud fue aprobada',
-                  // respuesta:{datsPer:resultSavePer,datsAfil:resultSaveAfil}
-                  respuesta:[]
-                };
-                res.json(respuesta);
+              }
+              var respuesta = {
+                error: false,
+                codigo: 200,
+                mensaje: 'La solicitud fue aprobada',
+                // respuesta:{datsPer:resultSavePer,datsAfil:resultSaveAfil}
+                respuesta:[]
+              };
+              res.json(respuesta);
               // }
             }
           }else if(req.body.typeAprob==false){

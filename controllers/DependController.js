@@ -35,6 +35,7 @@ async function getDependInt(req, res) {
         mensaje: 'No tiene acceso'
       };
       res.json(respuesta);
+      return
     }
     let resultFindDepend = await Depend.find().exec();
     var respuesta = {

@@ -41,7 +41,7 @@ async function getPrestInt(req, res) {
     else{
       console.log("BUSQUEDA servicios: "+JSON.stringify(req.body))
       Prest.find({status:true})
-      .populate('idservdats')
+      .populate('idEspec')
       .sort({Created_date:-1})
       .exec( async function (err, prestdat) {
         if (err){
@@ -106,7 +106,7 @@ exports.createPrest = function(req,res){
 async function createPrestInt (req, res) {
   var prueba={
     process:"Registrar Prestador",
-    modulo:"actmed",
+    modulo:"regcont",
     menuItem:31
   }
   if(req.body.acceso){
@@ -129,10 +129,11 @@ async function createPrestInt (req, res) {
             var data={
                 telPrest:val.telPrest,
                 prestName:val.prestName,
+                idEspec:val.especialidad,
                 cedPrest:val.cedPrest
             }
             var newPrest= new Prest(data);
-            let resultFind = await Prest.findOne({cedPrest:data.cedPrest}).exec()
+            let resultFind = await Prest.findOne({cedPrest:data.cedPrest,idEspec:data.idEspec}).exec()
             console.log("NOSE QUE PASA: "+JSON.stringify(newPrest))
             if(resultFind){
                 var respuesta = {
@@ -221,6 +222,93 @@ async function readPrestInt (req, res, next) {
           .find()
           .or(idservdats)
           .populate('idservdats')
+          .exec(async function (err, user) {
+              if (err){
+                var respuesta = {
+                  error: true,
+                  codigo: 501,
+                  mensaje: 'Error inesperado',
+                  respuesta:err
+                };
+                res.json(respuesta);
+              }else{
+                if(user==null){
+                  var respuesta = {
+                    error: false,
+                    codigo: 200,
+                    mensaje: 'El prestador no se encuentra registrado',
+                    respuesta:user
+                  };
+                  res.json(respuesta);
+                }else{
+                  var respuesta = {
+                    error: false,
+                    codigo: 200,
+                    mensaje: 'Datos de prestador extraidos con exito',
+                    respuesta:user
+                  };
+                  res.json(respuesta);
+                  ////Funcion auditora
+                  prueba.userId=req.body.acceso;
+                  var control= await multiFunct.addAudit(prueba);
+                  console.log("registrado")
+                  ////
+                }
+              }
+          });
+      }
+  }else{
+      var respuesta = {
+          error: true,
+          codigo: 502,
+          mensaje: 'Faltan datos requeridos'
+      };
+      res.json(respuesta);
+  }
+};
+exports.readPrestEspec = function(req,res){
+  readPrestEspecInt(req,res)
+  .catch(e => {
+      console.log('Problemas en el servidor ****: ' + e.message);
+      var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica readPrestEspec'
+      };
+      res.json(respuesta);
+  });
+}
+
+async function readPrestEspecInt (req, res, next) {
+  var prueba={
+    process:"Consultar Prestadores segun especialidad",
+    modulo:"regcont",
+    menuItem:31
+  }
+  if(req.body.acceso && req.body.moduloId){
+      ///Verificar acceso
+    
+      var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+      // var control=true
+      if(!control){
+          var respuesta = {
+              error: true,
+              codigo: 501,
+              mensaje: 'No tiene acceso'
+          };
+          res.json(respuesta);
+      }
+      ////
+      else{
+        // let idservdats=[{}]
+        // if(req.params.prestId!="0000"){
+        //   idservdats=[{idservdats:req.params.prestId}]
+        // }
+        console.log(req.params.especId)
+          Prest
+          .find({status:true,idEspec:req.params.especId})
+          // .or(idservdats)
+          .populate('idEspec')
           .exec(async function (err, user) {
               if (err){
                 var respuesta = {

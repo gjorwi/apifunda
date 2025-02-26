@@ -35,7 +35,7 @@ async function getPerdatInt(req, res) {
   var prueba={
     process:"Consultar persona",
     modulo:"config",
-    menuItem:1
+    menuItem:2
   }
   if(req.body.acceso){
     ///Verificar acceso
@@ -200,9 +200,9 @@ exports.readPerdat = function(req,res){
 
 async function readPerdatInt (req, res) {
   var prueba={
-    process:"Crear persona",
+    process:"Consoltar persona",
     modulo:"config",
-    menuItem:0
+    menuItem:2
   }
   console.log("DATA: "+JSON.stringify(req.body))
   if(req.body.acceso && req.body.moduloId && req.params.perdatId){

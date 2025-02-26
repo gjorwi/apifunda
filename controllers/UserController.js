@@ -102,7 +102,7 @@ async function createUserInt (req, res, next) {
     var prueba={
         process:"Crear usuario",
         modulo:"config",
-        menuItem:2
+        menuItem:1
       }
     if(req.body.acceso && req.body.userId){
         ///Verificar acceso
@@ -274,7 +274,7 @@ async function updateUserInt (req, res, next) {
     var prueba={
         process:"Actualizar usuario",
         modulo:"config",
-        menuItem:2
+        menuItem:13
     }
     if(req.body.acceso && req.body.moduloId && req.params.userId){
         ///Verificar acceso

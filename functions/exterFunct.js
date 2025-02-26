@@ -131,7 +131,7 @@ exports.checkUserAccess = async (id,modulo,menuItem) => {
         console.log("Check:"+id+" y "+menuItem)
         Permiso.find({userId:id}, async function (err, acceso) {
 ////probar con otra coleccion y con datos fijos
-            console.log(JSON.stringify(acceso))
+            console.log("Acceso: "+JSON.stringify(acceso))
             // resolve(true);
             if(acceso && acceso.length>0){
                 if(acceso[0].status==false)
@@ -140,44 +140,50 @@ exports.checkUserAccess = async (id,modulo,menuItem) => {
                 var total=acceso[0].modulos.length;
                 var count=0;
                 console.log("ANTES DEL MAP: "+JSON.stringify(acceso[0].modulos))
-                acceso[0].modulos.map(element => {
-                    count++;
-                    // console.log("ELEMENTO: "+element.name);
-                    // console.log("modulos: "+modulo);
-                    if(element.name==modulo){
-                        // console.log("Entro en config igual a config")
-                        var total2=element.item.length;
-                        var count2=0;
-                        element.item.map(element2 => {
-                            count2++
-                            // console.log("Map element2: "+element2.index)
-                            // console.log("Map element2: "+menuItem)
-                            // console.log("Map Count2: "+count2)
-                            // console.log("Map total2: "+total2)
+                var resultFilterModulo= acceso[0].modulos.filter(e=>e.name==modulo)
+                console.log("DESPUES DEL MAP: "+JSON.stringify(resultFilterModulo))
+                var resultFilterMenuItem=resultFilterModulo[0].item.filter(e=>e.index==menuItem)
+                console.log("RESULT: "+JSON.stringify(resultFilterMenuItem))
+                resolve(resultFilterMenuItem[0].valor)
+                
+                // acceso[0].modulos.map(element => {
+                //     count++;
+                //     // console.log("ELEMENTO: "+element.name);
+                //     // console.log("modulos: "+modulo);
+                //     if(element.name==modulo){
+                //         // console.log("Entro en config igual a config")
+                //         var total2=element.item.length;
+                //         var count2=0;
+                //         element.item.map(element2 => {
+                //             count2++
+                //             // console.log("Map element2: "+element2.index)
+                //             // console.log("Map element2: "+menuItem)
+                //             // console.log("Map Count2: "+count2)
+                //             // console.log("Map total2: "+total2)
 
-                            if(element2.index==menuItem){
-                                // console.log("Entro en items iguales")
-                                if(element2.valor==true){
-                                    console.log("Tiene permiso")
-                                    resolve(true);
-                                }else{
-                                    console.log("No tiene permiso 1")
-                                    resolve(false);
-                                }
-                            }
-                            if(count2==total2){
-                                // console.log("Termino map Element2")
-                                console.log("No tiene permiso 2")
-                                resolve(false);
-                            }
+                //             if(element2.index==menuItem){
+                //                 // console.log("Entro en items iguales")
+                //                 if(element2.valor==true){
+                //                     console.log("Tiene permiso")
+                //                     resolve(true);
+                //                 }else{
+                //                     console.log("No tiene permiso 1")
+                //                     resolve(false);
+                //                 }
+                //             }
+                //             if(count2==total2){
+                //                 // console.log("Termino map Element2")
+                //                 console.log("No tiene permiso 2")
+                //                 resolve(false);
+                //             }
 
-                        })
-                    }
-                    if(count==total){
-                        console.log("No tiene permiso 3")
-                        resolve(false);
-                    }
-                });  
+                //         })
+                //     }
+                //     if(count==total){
+                //         console.log("No tiene permiso 3")
+                //         resolve(false);
+                //     }
+                // });  
             }else{
                 console.log("No tiene permiso 4")
                 resolve(false);

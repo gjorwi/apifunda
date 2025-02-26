@@ -49,9 +49,10 @@ async function readAfilInt (req, res) {
     else{
       console.log("ID AFILIADO BUSQUEDA: "+req.params.afilId)
         Afil.
-        findOne({afilId:req.params.afilId,status:true}).
-        populate('idperdats').
-        exec(async function (err, afildat) {
+        findOne({afilId:req.params.afilId})
+        .populate('idperdats')
+        .populate('idtitdats')
+        .exec(async function (err, afildat) {
             if (err){
                 var respuesta = {
                     error: true,
@@ -257,6 +258,77 @@ async function updateAfilInt (req, res, next) {
           prueba.userId=req.body.acceso;
           var control= await multiFunct.addAudit(prueba);
           console.log("registrado")
+          ////
+          
+
+        }catch(err){
+          var respuesta = {
+            error: true,
+            codigo: 501,
+            mensaje: 'Error inesperado',
+            respuesta:err
+          };
+          res.json(respuesta);
+        }
+      }
+  }else{
+      var respuesta = {
+          error: true,
+          codigo: 502,
+          mensaje: 'Faltan datos requeridos'
+      };
+      res.json(respuesta);
+  }
+};
+exports.updateAfil2 = function(req,res){
+  updateAfil2Int(req,res)
+  .catch(e => {
+      console.log('Problemas en el servidor ****: ' + e.message);
+      var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica updateAfil2'
+      };
+      res.json(respuesta);
+  });
+}
+
+async function updateAfil2Int (req, res, next) {
+  var prueba={
+    process:"Actualizar fecha afiliado",
+    modulo:"regcont",
+    menuItem:31
+  }
+  if(req.body.acceso && req.params.afilId ){
+      ///Verificar acceso
+    
+      var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+      // var control=true
+      if(!control){
+          var respuesta = {
+              error: true,
+              codigo: 501,
+              mensaje: 'No tiene acceso'
+          };
+          res.json(respuesta);
+      }
+      ////
+      else{
+        try{
+          let fechaActualizada=new Date();
+          console.log(JSON.stringify(req.body))
+          // let resultFind = await Afil.findOneAndUpdate({ _id: req.params.afilId},{Updated_date: req.body},{new:true}).exec()
+          var respuesta = {
+            error: false,
+            codigo: 200,
+            mensaje: 'Fecha Actualizada con éxito',
+            respuesta:resultFind
+          };
+          res.json(respuesta);
+          ////Funcion auditora
+          // prueba.userId=req.body.acceso;
+          // var control= await multiFunct.addAudit(prueba);
+          // console.log("registrado")
           ////
           
 
