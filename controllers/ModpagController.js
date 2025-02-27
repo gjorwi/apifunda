@@ -128,7 +128,10 @@ async function getPrestAllInt(req, res) {
       console.log("BUSQUEDA servicios: "+JSON.stringify(req.body))
       ModPag.find({status:true})
       .populate('idpresdats')
-      .populate('idservdats')
+      .populate({
+        path: 'servicios',
+        model: 'Servicios'
+      })
       .sort({Created_date:-1})
       .exec( async function (err, prest) {
         if (err){
