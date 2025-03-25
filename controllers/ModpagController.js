@@ -51,7 +51,10 @@ async function getModInt(req, res) {
         path: 'idEspec',
         model: 'Especialidades'
       })
-      .populate('idservdats')
+      .populate({
+        path: 'servicios',
+        model: 'Servicios'
+      })
       .sort({Created_date:1})
       .exec( async function (err, modPag) {
         if (err){

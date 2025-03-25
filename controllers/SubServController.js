@@ -158,6 +158,70 @@ async function getCodSubServInt(req, res) {
   var control= await multiFunct.addAudit(prueba);
   ////
 };
+exports.selectSubServ = function(req,res){
+  selectSubServInt(req,res)
+  .catch(e => {
+    console.log('Problemas en el servidor ****: ' + e.message);
+    var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica selectSubServ'
+    };
+    res.json(respuesta);
+  });
+}
+
+async function selectSubServInt(req, res) {
+  console.log("ENTRO getServ")
+  var prueba={
+    process:"Consultar Subservicios por id de servicio",
+    modulo:"regcont",
+    menuItem:30
+  }
+  console.log(req.body.acceso)
+  if(!req.body.acceso){
+    var respuesta = {
+      error: true,
+      codigo: 502,
+      mensaje: 'Faltan datos requeridos'
+    };
+    return res.json(respuesta);
+  }
+  var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+  // var control=true
+  if(!control){
+    var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'No tiene acceso'
+    };
+    return res.json(respuesta);
+  }
+  const result= await Serv.find({idServ:req.params.servId,status:true})
+    .populate('idServ')
+    .exec()
+    if(result.length==0){
+      var respuesta = {
+        error: false,
+        codigo: 200,
+        mensaje: 'No se encuentran subservicios registrados',
+        respuesta:result
+      };
+      return res.json(respuesta);
+    }
+    var respuesta = {
+      error: false,
+      codigo: 200,
+      mensaje: 'Datos de Subservicios extraidos con exito',
+      respuesta:result
+    };
+    return res.json(respuesta);
+    ////Funcion auditora
+    console.log("aqui")
+    prueba.userId=req.body.acceso;
+    var control= await multiFunct.addAudit(prueba);
+    ////
+};
 
 exports.createSubServ = function(req,res){
   createSubServInt(req,res)

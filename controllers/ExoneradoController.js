@@ -48,7 +48,24 @@ async function readExoInt (req, res) {
     ////
     else{
       try{
-        let resultFind = await exo.find({exoId:req.params.exoId,status:true}).populate('idperdats').populate('idperdatsBen').exec()
+        let resultFind = await exo.find({exoId:req.params.exoId,status:true})
+        .populate('idperdats')
+        .populate('idperdatsBen')
+        .populate('idModPago')
+        .populate( {
+          path: 'idModPago',
+          populate: [
+            {
+              path: 'idEspec'
+            },
+            {
+              path: 'servicios'
+            }
+          ]
+        })
+        .populate('idServ')
+        .populate('idSubServ')
+        .exec()
         // console.log("DATA AFILIADO aqui: "+JSON.stringify(resultFind))
         // console.log("DATA AFILIADO aqui: "+JSON.stringify(resultFind.length))
         if(resultFind.length==0){

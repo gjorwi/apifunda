@@ -127,6 +127,119 @@ async function readAfilInt (req, res) {
         res.json(respuesta);
     }
 };
+exports.readAfil2 = function(req,res){
+  readAfil2Int(req,res)
+  .catch(e => {
+    console.log('Problemas en el servidor ****: ' + e.message);
+    var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica readAfil2'
+    };
+    res.json(respuesta);
+  });
+}
+
+async function readAfil2Int (req, res) {
+  var prueba={
+    process:"Consultar Afiliado",
+    modulo:"recepcion",
+    menuItem:8
+  }
+  console.log("DATA: ************"+JSON.stringify(req.body))
+  if(req.body.acceso && req.body.moduloId && req.params.afilId){
+    ///Verificar acceso
+    var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+    if(!control){
+      var respuesta = {
+        error: true,
+        codigo: 501,
+        mensaje: 'No tiene acceso'
+      };
+      res.json(respuesta);
+    }
+    ////
+    else{
+      console.log("ID AFILIADO BUSQUEDA: "+req.params.afilId)
+        Afil.
+        find({cedtit:req.params.afilId})
+        .populate('idperdats')
+        .populate('idtitdats')
+        .exec(async function (err, afildat) {
+            if (err){
+                var respuesta = {
+                    error: true,
+                    codigo: 501,
+                    mensaje: 'Error inesperado',
+                    respuesta:err
+                };
+                res.json(respuesta);
+            }else{
+              console.log("DATA RESULT ----- "+ afildat)
+              if(afildat==null){
+                var ced=parseInt(req.params.afilId)
+                console.log("CEDULA: "+req.params.afilId)
+                console.log("CEDULA: "+ced)
+                Perdat.
+                findOne({cedula:ced,status:true}).
+                // populate('idperdats').
+                exec(async function (err, perdat) {
+                  if (err){
+                    var respuesta = {
+                        error: true,
+                        codigo: 501,
+                        mensaje: 'Error inesperado',
+                        respuesta:err
+                    };
+                    res.json(respuesta);
+                  }else{
+                    console.log("DATA AFILIADO: "+JSON.stringify(perdat))
+                    if(perdat==null){
+                      var respuesta = {
+                        error: false,
+                        codigo: 201,
+                        mensaje: 'No se encuentra afiliado, sin datos.',
+                        respuesta:afildat
+                      };
+                      res.json(respuesta);
+                    }else{
+                      var respuesta = {
+                        error: false,
+                        codigo: 202,
+                        mensaje: 'No se encuentra afiliado, con datos.',
+                        respuesta:perdat
+                      };
+                      res.json(respuesta);
+                    }
+                  }
+                })
+              }else{
+                var respuesta = {
+                    error: false,
+                    codigo: 200,
+                    mensaje: 'Datos de afiliado extraidos con exito',
+                    respuesta:afildat
+                };
+                res.json(respuesta);
+              }
+              ////Funcion auditora
+              prueba.userId=req.body.acceso;
+              prueba.modulo=req.body.moduloId;
+              var control= await multiFunct.addAudit(prueba);
+              console.log("registrado")
+              ////
+            }
+        });
+    }
+    }else{
+        var respuesta = {
+            error: true,
+            codigo: 502,
+            mensaje: 'Faltan datos requeridos'
+        };
+        res.json(respuesta);
+    }
+};
 exports.readAfilTit = function(req,res){
   readAfilTitInt(req,res)
   .catch(e => {

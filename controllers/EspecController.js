@@ -194,6 +194,7 @@ async function createEspecInt (req, res) {
       console.log(req.body)
       var val=req.body
       var data={
+        excentAprob: val.modEspec,
         especName:val.especialidad.toUpperCase(),
         especCod:val.codigo
       }

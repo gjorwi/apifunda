@@ -52,6 +52,14 @@ var AfiliadoSchema = new Schema({
     fechinglab:{
         type: String,
     },
+    condicion:{
+        type: Boolean,
+        default: false
+    },
+    verifyMayores:{
+        type: Boolean,
+        default: false
+    },
     docanex: {
         docced: {
             type: Boolean

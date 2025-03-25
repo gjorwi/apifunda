@@ -211,71 +211,105 @@ async function readcheckperInt (req, res) {
     }
     ////
     else{
-        Afil.
-        find({status:true})
-          .or([{cedtit:req.params.checkperId},{cedpad:req.params.checkperId},{cedmad:req.params.checkperId},{afilId:req.params.checkperId}])
-          .populate('idperdats')
-          .populate('idtitdats')
-          .exec(async function (err, afildat) {
-            if (err){
-                var respuesta = {
-                    error: true,
-                    codigo: 501,
-                    mensaje: 'Error inesperado',
-                    respuesta:err
-                };
-                res.json(respuesta);
-            }else{
-                console.log("DATA AFILIADO: "+JSON.stringify(afildat))
-                if(afildat && afildat?.length==0){
-                  const resultGet = await Exo.find({exoId:req.params.checkperId,status:true})
-                    .populate('idperdats')
-                    .populate('idperdatsBen')
-                  if(resultGet && resultGet?.length==0){
-                    var respuesta = {
-                      error: false,
-                      codigo: 200,
-                      mensaje: 'No se encuentra el paciente',
-                      respuesta:resultGet
-                    };
-                    return res.json(respuesta);
-                  }
-                  if(req?.body?.servName?.toUpperCase()==resultGet[0]?.servSol?.toUpperCase()){
-                    console.log("COINCIDE")
-                    var respuesta = {
-                      error: false,
-                      codigo: 200,
-                      mensaje: 'Datos del paciente extraidos con exito',
-                      respuesta:resultGet
-                    };
-                    return res.json(respuesta);
-                  }else{
-                    console.log("NO COINCIDE")
-                    var respuesta = {
-                      error: false,
-                      codigo: 200,
-                      mensaje: 'Servicio solicitado del paciente exonerado no coincide',
-                      respuesta:null
-                    };
-                    return res.json(respuesta);
-                  }
-                  
-                }else{
-                    var respuesta = {
-                        error: false,
-                        codigo: 200,
-                        mensaje: 'Datos de los afiliados extraidos con exito',
-                        respuesta:afildat
-                    };
-                    res.json(respuesta);
-                }
-                ////Funcion auditora
-                prueba.userId=req.body.acceso;
-                var control= await multiFunct.addAudit(prueba);
-                console.log("registrado")
-                ////
-            }
-        });
+      console.log("DATA: "+JSON.stringify(req.params.checkperId))
+      Afil.find({status:true, nomi: { $ne: "CONTRATADO" }})
+      .or([{cedtit:req.params.checkperId},{cedpad:req.params.checkperId},{cedmad:req.params.checkperId},{afilId:req.params.checkperId}])
+      .populate('idperdats')
+      .populate('idtitdats')
+      .exec(async function (err, afildat) {
+        if (err){
+            var respuesta = {
+                error: true,
+                codigo: 501,
+                mensaje: 'Error inesperado',
+                respuesta:err
+            };
+            res.json(respuesta);
+            return
+        }
+        console.log("DATA AFILIADO: "+JSON.stringify(afildat))
+        if(afildat && afildat?.length==0){
+          console.log("NO AFILIADO")
+          const resultGet = await Exo.find({exoId:req.params.checkperId,status:true})
+            .populate('idperdats')
+            .populate('idModPago')
+            .populate({
+              path: 'idModPago',
+              populate: {
+                path: 'idEspec'
+              }
+              })
+            .populate('idperdatsBen')
+          if(resultGet && resultGet?.length==0){
+            var respuesta = {
+              error: false,
+              codigo: 200,
+              mensaje: 'No se encuentra el paciente',
+              respuesta:resultGet
+            };
+            return res.json(respuesta);
+          }
+          if(req?.body?.servName?.toUpperCase()==resultGet[0]?.servSol?.toUpperCase()){
+            console.log("COINCIDE")
+            var respuesta = {
+              error: false,
+              codigo: 200,
+              mensaje: 'Datos del paciente extraidos con exito',
+              respuesta:resultGet
+            };
+            res.json(respuesta);
+          }else{
+            console.log("NO COINCIDE")
+            var respuesta = {
+              error: false,
+              codigo: 200,
+              mensaje: 'Servicio solicitado del paciente exonerado no coincide',
+              respuesta:null
+            };
+            return res.json(respuesta);
+          }
+          
+        }
+        else{
+          console.log("AFILIADO")
+          var respuesta = {
+              error: false,
+              codigo: 200,
+              mensaje: 'Datos de los afiliados extraidos con exito',
+              respuesta:afildat
+          };
+          res.json(respuesta);
+          ////Funcion auditora
+          prueba.userId=req.body.acceso;
+          var control= await multiFunct.addAudit(prueba);
+          console.log("registrado")
+          ////
+          // const resultGet = await Exo.find({exoId:req.params.checkperId,status:true})
+          // .populate('idperdats')
+          // .populate('idperdatsBen')
+          // if(resultGet && resultGet?.length==0){
+          //   var respuesta = {
+          //     error: false,
+          //     codigo: 200,
+          //     mensaje: 'No se encuentra el paciente',
+          //     respuesta:resultGet
+          //   };
+          //   return res.json(respuesta);
+          // }
+        }
+        // var respuesta = {
+        //     error: false,
+        //     codigo: 200,
+        //     mensaje: 'Datos de los afiliados extraidos con exito',
+        //     respuesta:afildat
+        // };
+        // res.json(respuesta);
+        ////Funcion auditora
+        // prueba.userId=req.body.acceso;
+        // var control= await multiFunct.addAudit(prueba);
+        // console.log("registrado")
+        ////
+      });
     }
     }else{
         var respuesta = {

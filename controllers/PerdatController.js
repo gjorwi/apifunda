@@ -299,7 +299,15 @@ async function updatePerdatInt (req, res) {
       req.body.Updated_date=new Date();
       var data={
         status:req.body.status,
+        nombre:req.body.nombre,
+        apellido:req.body.apellido,
+        sexo:req.body.sexo,
+        estCiv:req.body.estCiv,
+        birthday:req.body.birthday,
         direccion:req.body.direccion,
+        muni:req.body.muni,
+        parro:req.body.parro,
+        sect:req.body.sect,
         correo:req.body.correo,
         telefono:req.body.telefono,
         Updated_date:req.body.Updated_date

@@ -196,7 +196,7 @@ async function createServInt (req, res) {
       var data={
         servName:val.servicio.toUpperCase(),
         // idEspec:val.especialidad,
-        excentAprob:val.modServ,
+        // excentAprob:val.modServ,
         servCod:val.codigo
       }
       var newServ= new Serv(data);

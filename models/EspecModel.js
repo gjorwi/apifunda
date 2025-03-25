@@ -11,6 +11,10 @@ var EspecialidadSchema = new Schema({
     required: [true, 'Codigo del Sub-Servicio'],
     unique:true
   },
+  excentAprob: {
+    type: Boolean,
+    default:false
+  },
   status: {
     type: Boolean,
     default:true

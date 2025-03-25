@@ -51,8 +51,8 @@ async function getSolExoInt(req, res) {
     ///
     else{
       SolExo.
-        find({status:true}).
-        exec(async function (err, solExodats) {
+        find({status:true})
+        .exec(async function (err, solExodats) {
         if (err){
           var respuesta = {
             error: true,
@@ -131,7 +131,7 @@ async function createSolExoInt (req, res) {
     }
     ////
     else{
-        console.log(req.body)
+        console.log("ID DE PAGO: "+req.body.idModPago)
         var val=req.body
         try {
             var data2={
@@ -157,17 +157,22 @@ async function createSolExoInt (req, res) {
                 parent:val.parent,
                 exoAddress:val.exoAddress,
                 reqDocAnex:val.reqDocAnex,
-                servSol:val.servSol,
+                idModPago:val.idModPago,
+                especName:val.especialidadName,
+                idServ:val.idServ,
+                idSubServ:val.idSubServ,
                 other:val.other,
                 obs:val.obs,
                 human:true
             }
-            console.log("Datos Arreglados para exonerado: "+JSON.stringify(data2))
+            // console.log("Datos Arreglados para exonerado: "+JSON.stringify(data2))
             // let findPerdats = await SolExo.findOne({exoId:data2.exoId,status:true}).exec();
-            if(!val.serExcentAprob){
+            if(!val.excentAprob){
+              console.log("ENTRO AQUI")
                 var newSolExo = new SolExo(data2);
                 console.log("Datos SETEADOS para exonerado: "+JSON.stringify(newSolExo))
                 let saveSolExo = await newSolExo.save(); //when fail its goes to catch
+                console.log("Datos GUARDADOS para exonerado: "+JSON.stringify(saveSolExo))
                 var respuesta = {
                     error: false,
                     codigo: 200,
@@ -241,7 +246,9 @@ async function createSolExoInt (req, res) {
                   idperdatsBen:_idBen,
                   depend:val.depend,
                   other:val.other,
-                  servSol:val.servSol,
+                  idModPago:val.idModPago,
+                  idServ:val.idServ,
+                  idSubServ:val.idSubServ,
                   reqDocAnex:val.reqDocAnex,
                   obs:val.obs,
                   parent:val.parent,
@@ -494,7 +501,9 @@ async function updateSolExoInt (req, res) {
                 idperdatsBen:resultFind.idperdatsBen,
                 depend:resultFind.depend,
                 other:resultFind.other,
-                servSol:resultFind.servSol,
+                idModPago:resultFind.idModPago,
+                idServ:resultFind.idServ,
+                idSubServ:resultFind.idSubServ,
                 reqDocAnex:resultFind.reqDocAnex,
                 obs:resultFind.obs,
                 parent:resultFind.parent,

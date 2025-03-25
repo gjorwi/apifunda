@@ -91,6 +91,14 @@ var SolAfiliadoSchema = new Schema({
         type: String,
         required: [true, 'Fecha de ingreso laboral']
     },
+    condicion:{
+        type: Boolean,
+        default: false
+    },
+    verifyMayores:{
+        type: Boolean,
+        default: false
+    },
     docanex: {
         docced: {
             type: Boolean

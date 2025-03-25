@@ -28,9 +28,20 @@ var ExoneradoSchema = new Schema({
         type: String,
         required: [true, 'beneficiario']
     },
-    servSol: {
-        type: String,
-        default:"Medicina general"
+    idModPago: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Modalidades',
+        required: [true, 'id de modalidad de pago']
+    },
+    idServ: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Servicios',
+        required: [true, 'id de servicio']
+    },
+    idSubServ: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Subservicios',
+        default:null
     },
     reqDocAnex: {
         docCedBen:{

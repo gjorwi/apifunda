@@ -40,6 +40,8 @@ module.exports = function (app) {
   app.route('/afiliado/:afilId')
     .post(multiFunct.authenticateJWT,afil.readAfil)
     .put(multiFunct.authenticateJWT,afil.updateAfil)
+  app.route('/afiliado2/:afilId')
+    .post(multiFunct.authenticateJWT,afil.readAfil2)
   // app.route('/afiliadoUpdate/:afilId')
   //   .put(multiFunct.authenticateJWT,afil.updateAfil2)
   app.route('/afiliadotit/:afilId')
@@ -112,7 +114,7 @@ module.exports = function (app) {
   app.route('/subserviciocode')
     .post(multiFunct.authenticateJWT,subserv.getCodSubServ);
   app.route('/subservicio/:servId')
-    // .put(multiFunct.authenticateJWT,serv.selectServ)
+    .put(multiFunct.authenticateJWT,subserv.selectSubServ)
     .delete(multiFunct.authenticateJWT,subserv.deleteSubServ);
 // #####################################################################
 var modpag = require('../controllers/ModpagController');

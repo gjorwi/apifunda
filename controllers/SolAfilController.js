@@ -175,12 +175,13 @@ async function createSolAfilInt (req, res) {
                 cedpad:val.cedPad,
                 cedmad:val.cedMad,
                 cedtit:val.cedTit,
-                // idtitdats:val.idtitdats,
                 parent:val.parent,
+                verifyMayores:val.verifyMayores,
                 fechinglab:val.fechIngLab,
                 reqdocanex:val.reqDocAnex,
                 docanex:val.afiDocAnex,
-                obs:val.obs
+                obs:val.obs,
+                condicion:val.condicion=="true"?true:false
             }
 
             console.log("Datos Arreglados para afiliado: "+JSON.stringify(data2))
@@ -357,8 +358,8 @@ async function updateSolAfilInt (req, res) {
                 nombre:resultFind.nombre,
                 apellido:resultFind.apellido,
                 sexo:resultFind.sexo,
-                estCiv:resultFind.estCiv,
                 birthday:resultFind.birthday,
+                estCiv:resultFind.estCiv,
                 telefono:resultFind.telefono,
                 muni:resultFind.muni,
                 parro:resultFind.parro,
@@ -381,6 +382,10 @@ async function updateSolAfilInt (req, res) {
               }else{
                 console.log("Direccion======:"+JSON.stringify(resultFind.direccion))
                 var data={
+                  nombre:resultFind.nombre,
+                  apellido:resultFind.apellido,
+                  sexo:resultFind.sexo,
+                  birthday:resultFind.birthday,
                   estCiv:resultFind.estCiv,
                   telefono:resultFind.telefono,
                   muni:resultFind.muni,
@@ -433,8 +438,10 @@ async function updateSolAfilInt (req, res) {
                 resultFindAfiliadoUpdate.cedpad=resultFind.cedpad
                 resultFindAfiliadoUpdate.cedmad=resultFind.cedmad
                 resultFindAfiliadoUpdate.cedtit=resultFind.cedtit
+                resultFindAfiliadoUpdate.condicion=resultFind.condicion
                 resultFindAfiliadoUpdate.idtitdats=resultFindPerdats._id
                 resultFindAfiliadoUpdate.parent=resultFind.parent
+                resultFindAfiliadoUpdate.verifyMayores=resultFind.verifyMayores
                 resultFindAfiliadoUpdate.fechinglab=resultFind.fechinglab
                 resultFindAfiliadoUpdate.reqdocanex=resultFind.reqdocanex
                 resultFindAfiliadoUpdate.docanex=resultFind.docanex
@@ -461,6 +468,8 @@ async function updateSolAfilInt (req, res) {
                   cedtit:resultFind.cedtit,
                   idtitdats:resultFindPerdats._id,
                   parent:resultFind.parent,
+                  verifyMayores:resultFind.verifyMayores,
+                  condicion:resultFind.condicion,
                   fechinglab:resultFind.fechinglab,
                   reqdocanex:resultFind.reqdocanex,
                   docanex:resultFind.docanex,

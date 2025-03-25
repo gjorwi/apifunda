@@ -18,20 +18,26 @@ mongoose.connect('mongodb+srv://fundadb2:Jf18769212.@cluster0.cfhkb.mongodb.net/
 
 app.use(bodyParser.urlencoded({ extended: true })); 
 app.use(bodyParser.json());
-app.use(cors({
-    origin: 'https://fundamutual.vercel.app', // Permitir solicitudes desde este origen
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-}));
-
+app.use(cors())
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "https://fundamutual.vercel.app");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
-    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
+// app.use(cors({
+//     origin: 'https://fundamutual.vercel.app', // Permitir solicitudes desde este origen
+//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//     credentials: true,
+//     allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+// }));
+
+// app.use(function(req, res, next) {
+//     res.header("Access-Control-Allow-Origin", "https://fundamutual.vercel.app");
+//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+//     res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
+//     res.header("Access-Control-Allow-Credentials", "true");
+//     next();
+// });
 
 //importing route
 var routes = require('./router/fundaRoutes'); 

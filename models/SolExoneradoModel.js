@@ -85,14 +85,26 @@ var SolExoneradoSchema = new Schema({
         type: String,
         required: [true, 'beneficiario']
     },
-    servSol: {
+    idModPago: {
         type: String,
-        default:"Medicina general"
+        required: [true, 'Id de modalidad de pago']
+    },
+    especName: {
+        type: String,
+        required: [true, 'Especialidad']
+    },
+    idServ: {
+        type: String,
+        required: [true, 'Id de servicio']
+    },
+    idSubServ: {
+        type: String,
+        default:null
     },
     reqDocAnex: {
         docCedBen:{
             type: String,
-            required: [true, 'Cedula beneficiario']
+            required: [true, 'Cedula del beneficiario']
         },
         docInfoMed:{
             type: String,
