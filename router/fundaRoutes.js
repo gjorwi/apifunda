@@ -67,6 +67,8 @@ module.exports = function (app) {
   app.route('/solafiliado')
     .put(multiFunct.authenticateJWT,solAfil.getSolAfil)
     .post(multiFunct.authenticateJWT,solAfil.createSolAfil);
+  app.route('/solafiliado/excel')
+    .post(multiFunct.authenticateJWT,solAfil.readSolAfilXlsx);
   app.route('/solafiliado/:solAfilId')
     .post(multiFunct.authenticateJWT,solAfil.readSolAfil)
     .put(multiFunct.authenticateJWT,solAfil.updateSolAfil)
@@ -211,6 +213,7 @@ var modpag = require('../controllers/ModpagController');
     .put(multiFunct.authenticateJWT,depend.getDepend)
     .post(multiFunct.authenticateJWT,depend.createDepend);
   app.route('/dependencia/:dependId')
+    .put(multiFunct.authenticateJWT,depend.updateDepend)
     .delete(multiFunct.authenticateJWT,depend.deleteDepend);
 // #####################################################################
   var nomina = require('../controllers/NominaController');

@@ -1,0 +1,111 @@
+{
+    "parroquias": [
+        { "id": "PF01", "municipio_id": "MF01", "nombre": "CAPADARE" },
+        { "id": "PF02", "municipio_id": "MF01", "nombre": "LA PASTORA" },
+        { "id": "PF03", "municipio_id": "MF01", "nombre": "LIBERTADOR" },
+        { "id": "PF04", "municipio_id": "MF01", "nombre": "SAN JUAN DE LOS CAYOS" },
+
+        { "id": "PF05", "municipio_id": "MF02", "nombre": "ARACUA" },
+        { "id": "PF06", "municipio_id": "MF02", "nombre": "LA PENA" },
+        { "id": "PF07", "municipio_id": "MF02", "nombre": "SAN LUIS" },
+
+        { "id": "PF08", "municipio_id": "MF03", "nombre": "BARIRO" },
+        { "id": "PF09", "municipio_id": "MF03", "nombre": "BOROJO" },
+        { "id": "PF10", "municipio_id": "MF03", "nombre": "CAPATARIDA" },
+        { "id": "PF11", "municipio_id": "MF03", "nombre": "GUAJIRO" },
+        { "id": "PF12", "municipio_id": "MF03", "nombre": "SEQUE" },
+        { "id": "PF13", "municipio_id": "MF03", "nombre": "VALLE DE EROA" },
+        { "id": "PF14", "municipio_id": "MF03", "nombre": "ZAZARIDA" },
+
+        { "id": "PF15", "municipio_id": "MF04", "nombre": "SAN JOSE DE BRUZUAL" },
+
+        { "id": "PF16", "municipio_id": "MF05", "nombre": "CARIRUBANA" },
+        { "id": "PF17", "municipio_id": "MF05", "nombre": "NORTE" },
+        { "id": "PF18", "municipio_id": "MF05", "nombre": "PUNTA CARDON" },
+        { "id": "PF19", "municipio_id": "MF05", "nombre": "SANTA ANA" },
+
+        { "id": "PF20", "municipio_id": "MF06", "nombre": "ACURIGUA" },
+        { "id": "PF21", "municipio_id": "MF06", "nombre": "GUAIBACOA" },
+        { "id": "PF22", "municipio_id": "MF06", "nombre": "LA VELA DE CORO" },
+        { "id": "PF23", "municipio_id": "MF06", "nombre": "LAS CALDERAS" },
+        { "id": "PF24", "municipio_id": "MF06", "nombre": "MACORUCA" },
+
+        { "id": "PF25", "municipio_id": "MF07", "nombre": "DABAJURO" },
+
+        { "id": "PF26", "municipio_id": "MF08", "nombre": "AGUA CLARA" },
+        { "id": "PF27", "municipio_id": "MF08", "nombre": "AVARIA" },
+        { "id": "PF28", "municipio_id": "MF08", "nombre": "PEDREGAL" },
+        { "id": "PF29", "municipio_id": "MF08", "nombre": "PIEDRA GRANDE" },
+        { "id": "PF30", "municipio_id": "MF08", "nombre": "PURURECHE" },
+
+        { "id": "PF31", "municipio_id": "MF09", "nombre": "ADAURE" },
+        { "id": "PF32", "municipio_id": "MF09", "nombre": "ADICORA" },
+        { "id": "PF33", "municipio_id": "MF09", "nombre": "BARAIVED" },
+        { "id": "PF34", "municipio_id": "MF09", "nombre": "BUENA VISTA" },
+        { "id": "PF35", "municipio_id": "MF09", "nombre": "EL HATO" },
+        { "id": "PF36", "municipio_id": "MF09", "nombre": "EL VINCULO" },
+        { "id": "PF37", "municipio_id": "MF09", "nombre": "JADACAQUIVA" },
+        { "id": "PF38", "municipio_id": "MF09", "nombre": "MORUY" },
+        { "id": "PF39", "municipio_id": "MF09", "nombre": "PUEBLO NUEVO" },
+
+        { "id": "PF40", "municipio_id": "MF10", "nombre": "AGUA LARGA" },
+        { "id": "PF41", "municipio_id": "MF10", "nombre": "CHURUGUARA" },
+        { "id": "PF42", "municipio_id": "MF10", "nombre": "EL PAUJI" },
+        { "id": "PF43", "municipio_id": "MF10", "nombre": "INDEPENDENCIA" },
+        { "id": "PF44", "municipio_id": "MF10", "nombre": "MAPARARI" },
+
+        { "id": "PF45", "municipio_id": "MF11", "nombre": "AGUA LINDA" },
+        { "id": "PF46", "municipio_id": "MF11", "nombre": "ARAUIMA" },
+        { "id": "PF47", "municipio_id": "MF11", "nombre": "JACURA" },
+
+        { "id": "PF48", "municipio_id": "MF12", "nombre": "LOS TAQUES" },
+
+        { "id": "PF49", "municipio_id": "MF13", "nombre": "CASIGUA" },
+        { "id": "PF50", "municipio_id": "MF13", "nombre": "MENE DE MAUROA" },
+        { "id": "PF51", "municipio_id": "MF13", "nombre": "SAN FELIX" },
+
+        { "id": "PF52", "municipio_id": "MF14", "nombre": "GUZMAN GUILERMO" },
+        { "id": "PF53", "municipio_id": "MF14", "nombre": "MITARE" },
+        { "id": "PF54", "municipio_id": "MF14", "nombre": "RIO SECO" },
+        { "id": "PF55", "municipio_id": "MF14", "nombre": "SABANETA" },
+        { "id": "PF56", "municipio_id": "MF14", "nombre": "SAN ANTONIO" },
+        { "id": "PF57", "municipio_id": "MF14", "nombre": "SAN GABRIEL" },
+        { "id": "PF58", "municipio_id": "MF14", "nombre": "SANTA ANA" },
+
+        { "id": "PF59", "municipio_id": "MF15", "nombre": "BOCA DEL TOCUYO" },
+        { "id": "PF60", "municipio_id": "MF15", "nombre": "CHICHIRIVICHE" },
+        { "id": "PF61", "municipio_id": "MF15", "nombre": "TOCUYO DE LA COSTA" },
+
+        { "id": "PF62", "municipio_id": "MF16", "nombre": "PALMASOLA" },
+
+        { "id": "PF63", "municipio_id": "MF17", "nombre": "CABURE" },
+        { "id": "PF64", "municipio_id": "MF17", "nombre": "COLINA" },
+        { "id": "PF65", "municipio_id": "MF17", "nombre": "CURIMAGUA" },
+
+        { "id": "PF66", "municipio_id": "MF18", "nombre": "PIRITU" },
+        { "id": "PF67", "municipio_id": "MF18", "nombre": "SAN JOSE DE LA COSTA" },
+
+        { "id": "PF68", "municipio_id": "MF19", "nombre": "MIRIMIRE" },
+
+        { "id": "PF69", "municipio_id": "MF20", "nombre": "BOCA DE AROA" },
+        { "id": "PF70", "municipio_id": "MF20", "nombre": "TUCACAS" },
+
+        { "id": "PF71", "municipio_id": "MF21", "nombre": "PECAYA" },
+        { "id": "PF72", "municipio_id": "MF21", "nombre": "SUCRE" },
+
+        { "id": "PF73", "municipio_id": "MF22", "nombre": "TOCOPERO" },
+
+        { "id": "PF74", "municipio_id": "MF23", "nombre": "EL CHARAL" },
+        { "id": "PF75", "municipio_id": "MF23", "nombre": "LAS VEGAS DEL TUY" },
+        { "id": "PF76", "municipio_id": "MF23", "nombre": "SANTA CRUZ DE BUCARAL" },
+
+        { "id": "PF77", "municipio_id": "MF24", "nombre": "BRUZUAL" },
+        { "id": "PF78", "municipio_id": "MF24", "nombre": "URUMACO" },
+
+        { "id": "PF79", "municipio_id": "MF25", "nombre": "LA CIENAGA" },
+        { "id": "PF80", "municipio_id": "MF25", "nombre": "LA SOLEDAD" },
+        { "id": "PF81", "municipio_id": "MF25", "nombre": "PUEBLO CUMAREBO" },
+        { "id": "PF82", "municipio_id": "MF25", "nombre": "PUERTO CUMAREBO" },
+        { "id": "PF83", "municipio_id": "MF25", "nombre": "ZAZARIDA" }
+    ]
+}

@@ -370,7 +370,7 @@ async function createAgendaInt (req, res) {
             var splitNow=formatNow.split("-")
             var format=val.fechAgen.split("-")
 
-            if(parseInt(format[0]+format[1]+format[2]) >= parseInt(splitNow[0]+splitNow[1]+splitNow[2])){
+            // if(parseInt(format[0]+format[1]+format[2]) >= parseInt(splitNow[0]+splitNow[1]+splitNow[2])){
                 var formatFech=DIA[newD.getDay()]+" "+newD2[2]+" de "+MESES[month-1]+" del "+newD2[0]
                 var data={
                     countPac:val.countPac,
@@ -406,16 +406,16 @@ async function createAgendaInt (req, res) {
                     console.log("registrado")
                     ////
                 }
-            }else{
-                console.log("Menor")
-                var respuesta = {
-                    error: true,
-                    codigo: 501,
-                    mensaje: 'La fecha de agenda no puede ser menor a la fecha de creación',
-                    respuesta:[]
-                };
-                res.json(respuesta);
-            }
+            // }else{
+            //     console.log("Menor")
+            //     var respuesta = {
+            //         error: true,
+            //         codigo: 501,
+            //         mensaje: 'La fecha de agenda no puede ser menor a la fecha de creación',
+            //         respuesta:[]
+            //     };
+            //     res.json(respuesta);
+            // }
         }catch(err){
             console.log("Error: si"+err)
             var respuesta = {

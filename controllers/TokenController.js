@@ -53,7 +53,7 @@ async function refreshTokenInt (req, res, next) {
                 return res.json(respuesta);
             }
 
-            const accessToken = jwt.sign({ username: user.username, clave: user.clave }, accessTokenSecret, { expiresIn: '30m' });
+            const accessToken = jwt.sign({ username: user.username, clave: user.clave }, accessTokenSecret, { expiresIn: '60m' });
             Authy.findOneAndUpdate({userId:req.body.acceso},{token:accessToken},{new:true}, async function (err, authyr) {
                 if(err){
                     console.log("ENtro en el IF")

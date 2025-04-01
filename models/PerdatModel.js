@@ -16,19 +16,15 @@ var PerdatSchema = new Schema({
   },
   estCiv: {
     type: String,
-    required: [true, 'Apellido de la persona']
   },
   parro: {
     type: String,
-    required: [true, 'Apellido de la persona']
   },
   muni: {
     type: String,
-    required: [true, 'Apellido de la persona']
   },
   sect: {
     type: String,
-    required: [true, 'Apellido de la persona']
   },
   cedula: {
     type: Number,
@@ -40,7 +36,7 @@ var PerdatSchema = new Schema({
   },
   birthday:{
     type: Date,
-    required: [true, 'Fecha de nacimiento de la persona']
+    default:null
   },
   correo:{
     type: String

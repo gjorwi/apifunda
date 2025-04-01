@@ -143,6 +143,66 @@ async function createDependInt (req, res) {
     res.json(respuesta);
   }
 };
+exports.updateDepend = function(req,res){
+  updateDependInt(req,res)
+  .catch(e => {
+    console.log('Problemas en el servidor ****: ' + e.message);
+    var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica updateDepend'
+    };
+    res.json(respuesta);
+  });
+}
+async function updateDependInt (req, res) {
+  var prueba={
+    process:"Actualizar Dependencia",
+    modulo:"config",
+    menuItem:13
+  }
+  if(req.body.acceso){
+    ///Verificar acceso
+    var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+    // var control=true
+    if(!control){
+      var respuesta = {
+        error: true,
+        codigo: 501,
+        mensaje: 'No tiene acceso'
+      };
+      res.json(respuesta);
+    }
+    ////
+    else{
+        console.log(req.body)
+        var val=req.body
+        let dependName=val.dependencia.toUpperCase()
+        let resultFindDepend = await Depend.findOne({_id:req.params.dependId}).exec();
+        resultFindDepend.dependName=dependName
+        resultFindDepend.save()
+        
+        var respuesta = {
+            error: false,
+            codigo: 200,
+            mensaje: 'Datos de la dependencia actualizados con éxito',
+            respuesta:resultFindDepend
+        };
+        res.json(respuesta);
+        ////Funcion auditora
+        prueba.userId=req.body.acceso;
+        var control= await multiFunct.addAudit(prueba);
+        console.log("registrado")
+    }
+  }else{
+    var respuesta = {
+      error: true,
+      codigo: 502,
+      mensaje: 'Faltan datos requeridos'
+    };
+    res.json(respuesta);
+  }
+};
 exports.createParroFile = function(req,res){
   createParroFileInt(req,res)
   .catch(e => {

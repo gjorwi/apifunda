@@ -62,13 +62,16 @@ var AfiliadoSchema = new Schema({
     },
     docanex: {
         docced: {
-            type: Boolean
+            type: Boolean,
+            default: false
         },
         docnomb: {
-            type: Boolean
+            type: Boolean,
+            default: false
         },
         docrecpag: {
-            type: Boolean
+            type: Boolean,
+            default: false
         }
     },
     reqdocanex: {
@@ -104,7 +107,8 @@ var AfiliadoSchema = new Schema({
         }
     },
     obs: {
-        type: String
+        type: String,
+        default:""
     },
     identificador: {
         type: String,

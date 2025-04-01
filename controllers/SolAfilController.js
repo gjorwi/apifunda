@@ -6,6 +6,7 @@ SolAfil = mongoose2.model('SolAfiliados');
 var mongoose3 = require('../models/AfiliadoModel'),
 Afil = mongoose2.model('Afiliados');
 var multiFunct = require('../functions/exterFunct');//multiFunc llamaddo
+const XLSX = require('xlsx');
 
 exports.infoDat = function (req, res) {
   var respuesta = {
@@ -99,6 +100,232 @@ async function getSolAfilInt(req, res) {
     res.json(respuesta);
   }
 };
+
+exports.readSolAfilXlsx = function(req,res){
+  readSolAfilXlsxInt(req,res)
+  .catch(e => {
+    console.log('Problemas en el servidor ****: ' + e.message);
+    var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica readSolAfilXlsx'
+    };
+    res.json(respuesta);
+  });
+}
+
+async function readSolAfilXlsxInt(req, res) {
+  var prueba={
+    process:"Consultar afiliado xlsx",
+    modulo:"recepcion",
+    menuItem:10
+  }
+  if(req.body.acceso){
+    var control=true
+    if(!control){
+      var respuesta = {
+        error: true,
+        codigo: 501,
+        mensaje: 'No tiene acceso'
+      };
+      res.json(respuesta);
+    }
+    else{
+      try {
+        // //consultar los municipios y las parroquias
+        // const municipios = await Municipio.find({status:true});
+        // const parroquias = await Parroquia.find({status:true});
+        
+        // Leer el archivo Excel desde la ruta proporcionada
+        console.log("Leyendo archivo excel");
+        const workbook = XLSX.readFile('excelData.xlsx');
+        console.log("Archivo leido");
+        // Obtener la primera hoja
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        console.log("Hoja obtenida");
+        // Convertir a JSON manteniendo los encabezados
+        const jsonData = XLSX.utils.sheet_to_json(firstSheet, {
+          raw: false,
+          defval: '',
+          header: 1
+        });
+        console.log("Datos convertidos");
+        if (jsonData.length < 2) {
+          return res.json({
+            error: true,
+            codigo: 400,
+            mensaje: 'El archivo no contiene datos suficientes'
+          });
+        }
+
+        // Extraer encabezados (primera fila)
+        const headers = jsonData[0];
+        console.log("Encabezados extraidos");
+        // Procesar datos (resto de filas)
+        const data = jsonData.slice(1).map(row => {
+          const item = {};
+          headers.forEach((header, index) => {
+            const cleanHeader = header.trim().toLowerCase().replace(/\s+/g, '_');
+            item[cleanHeader] = row[index] || '';
+          });
+          return item;
+        });
+        data.map(async (row, index) => {
+          // Aquí puedes agregar las validaciones específicas que necesites
+          // Por ejemplo, validar cédulas, fechas, etc.
+          const formattedRow = { ...row };
+  
+          // Ejemplo de validaciones (ajustar según tus necesidades)
+          if (formattedRow.cedula) {
+            formattedRow.cedula = formattedRow.cedula.toString().trim();
+            // Validar cédula quitar ceros adelante
+            formattedRow.cedula = formattedRow.cedula.replace(/^0+/, '');
+          }
+          if (formattedRow.fecha_nacimiento) {
+              // Convertir fecha a formato ISO
+              const fecha = new Date(formattedRow.fecha_nacimiento);
+              formattedRow.fecha_nacimiento = fecha.toISOString().split('T')[0];
+          }
+          if (formattedRow.nombre) {
+              formattedRow.nombre = formattedRow.nombre.toString().trim().toUpperCase();
+          }
+          if (formattedRow.apellido) {
+              formattedRow.apellido = formattedRow.apellido.toString().trim().toUpperCase();
+          }
+          if (formattedRow.sexo) {
+              formattedRow.sexo = formattedRow.sexo==="M"?"MASCULINO":"FEMENINO";
+          }
+          if (formattedRow.estciv) {
+              formattedRow.estciv = formattedRow.estciv==="S"?"SOLTERO":formattedRow.estciv==="C"?"CASADO":formattedRow.estciv==="D"?"DIVORCIADO":formattedRow.estciv==="V"?"VIUDO":"";
+          }
+          data[index] = formattedRow;
+        });
+        //guardar datos en base de datos uno por uno utilizando el modelo afiliadoModel
+        var count=0; 
+        for await (const row of data) {
+          count++;
+          console.log("Contador: "+count);
+          //validar que solo el campo birthday no este vacio y que no contenga caracteres tipo guiones
+          if(count>790){
+            console.log("Datos procesados");
+            console.log("+++++++++++Datos procesados antes de guardar+++++: ",JSON.stringify(data[0]));
+            //crear una variable modelo con los datos a guardar en el esquema de afiliado
+            const dataAfil = {
+              nombre: row.nombre,
+              apellido: row.apellido,
+              cedula: row.cedula,
+              sexo: row.sexo,
+              estCiv: row.estciv,
+              telefono: row.telefono,
+              correo: row.correo,
+              direccion: row.direccion,
+              muni: row.muni,
+              parro: row.parro,
+              sect: row.sect,
+              birthday: row.birthday ? (row.birthday.includes('-') ? null : row.birthday) : null,
+              status: true,
+              human: true
+            };
+            
+            const afiliado = new Perdat(dataAfil);
+            console.log("datos de persona: ",JSON.stringify(afiliado));
+            const resultFind = await Perdat.findOne({ cedula: row.cedula });
+            let idperdats;
+            if (!resultFind) {
+              const result = await afiliado.save();
+              idperdats = result._id;
+              console.log("Datos de persona guardados: ",JSON.stringify(result));
+            }else{
+              idperdats = resultFind._id;
+            }
+            //formatear fecha para ingresarla correctamente a la base de datos dd-MM-yyyy
+            const formatearFecha = (fecha) => {
+              if (!fecha) return new Date();
+              const fechaObj = new Date(fecha);
+              if (isNaN(fechaObj.getTime())) return new Date();
+              return fechaObj;
+            };
+
+            var data2={
+              afilId:row.cedula,
+              idperdats:idperdats,
+              depend:row.depend,
+              nomi:row.nomi,
+              depart:row.depart,
+              type:'TITULAR',
+              cedpad:'NA',
+              cedmad:'NA',
+              cedtit:row.cedula,
+              idtitdats:idperdats,
+              parent:'NA',
+              fechinglab:row.fechinglab,
+              reqdocanex:{
+                actMat:false,
+                cedEsp:false,
+                disMat:false,
+                actDef:false,
+                autRet:false,
+                partNacHij:false,
+                cedHij9A:false,
+                constEst:false,
+                cartSolt:false,
+                cartDepEco:false,
+                carDisc:false,
+                certPartNac:false,
+                cedPadres:false
+              } ,
+              docanex:{
+                docced:true,
+                docnomb:true,
+                docrecpag:true
+              },
+              obs:'',
+              status:row.status=="ACTIVO"?true:false,
+              Updated_date:formatearFecha(row.fechaactdats)
+            }
+            console.log("Datos de antes del esquema afiliado: ",JSON.stringify(data2));
+            const afiliado2 = new Afil(data2);
+            console.log("Datos de afiliado: ",JSON.stringify(afiliado2));
+            const resultFind2 = await Afil.findOne({ afilId: row.cedula });
+            if (!resultFind2) {
+              const result2 = await afiliado2.save();
+              console.log("Datos de afiliado guardados: ",JSON.stringify(result2));
+            }
+          }
+          
+        }
+        
+        // Enviar respuesta
+        res.json({
+          error: false,
+          codigo: 200,
+          mensaje: 'Archivo procesado correctamente',
+          respuesta: {
+            headers: headers,
+            data: data,
+            totalRows: data.length
+          }
+        });
+        console.log("Respuesta enviada");
+      } catch (error) {
+        console.error('Error procesando archivo:', error);
+        res.json({
+          error: true,
+          codigo: 500,
+          mensaje: 'Error procesando el archivo: ' + error.message
+        });
+      }
+    }
+  }
+  else{
+    var respuesta = {
+      error: true,
+      codigo: 502,
+      mensaje: 'Faltan datos requeridos'
+    };
+    res.json(respuesta);
+  }
+}
 
 exports.createSolAfil = function(req,res){
   createSolAfilInt(req,res)

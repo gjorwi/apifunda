@@ -1,0 +1,29 @@
+{
+    "municipios": [
+        { "id": "MF01", "nombre": "ACOSTA" },
+        { "id": "MF02", "nombre": "BOLIVAR" },
+        { "id": "MF03", "nombre": "BUCHIVACOA" },
+        { "id": "MF04", "nombre": "CACIQUE MANAURE" },
+        { "id": "MF05", "nombre": "CARIRUBANA" },
+        { "id": "MF06", "nombre": "COLINA" },
+        { "id": "MF07", "nombre": "DABAJURO" },
+        { "id": "MF08", "nombre": "DEMOCRACIA" },
+        { "id": "MF09", "nombre": "FALCON" },
+        { "id": "MF10", "nombre": "FEDERACION" },
+        { "id": "MF11", "nombre": "JACURA" },
+        { "id": "MF12", "nombre": "LOS TAQUES" },
+        { "id": "MF13", "nombre": "MAUROA" },
+        { "id": "MF14", "nombre": "MIRANDA" },
+        { "id": "MF15", "nombre": "MONSENOR ITURRIZA" },
+        { "id": "MF16", "nombre": "PALMASOLA" },
+        { "id": "MF17", "nombre": "PETIT" },
+        { "id": "MF18", "nombre": "PIRITU" },
+        { "id": "MF19", "nombre": "SAN FRANCISCO" },
+        { "id": "MF20", "nombre": "SILVA" },
+        { "id": "MF21", "nombre": "SUCRE" },
+        { "id": "MF22", "nombre": "TOCOPERO" },
+        { "id": "MF23", "nombre": "UNION" },
+        { "id": "MF24", "nombre": "URUMACO" },
+        { "id": "MF25", "nombre": "ZAMORA" }
+    ]
+}

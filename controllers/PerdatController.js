@@ -32,64 +32,67 @@ exports.getPerdat = function(req,res){
 }
 
 async function getPerdatInt(req, res) {
-  var prueba={
-    process:"Consultar persona",
-    modulo:"config",
-    menuItem:2
-  }
-  if(req.body.acceso){
-    ///Verificar acceso
-    var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
-    console.log("VALOR CONTROL: "+control)
-    // var control=true
-    if(!control){
+  var prueba = {
+    process: "Consultar persona",
+    modulo: "config",
+    menuItem: 2
+  };
+
+  if (req.body.acceso) {
+    // Verificar acceso
+    var control = await multiFunct.checkUserAccess(req.body.acceso, prueba.modulo, prueba.menuItem);
+    console.log("VALOR CONTROL: " + control);
+
+    if (!control) {
       var respuesta = {
         error: true,
         codigo: 501,
         mensaje: 'No tiene acceso'
       };
+      return res.json(respuesta);
+    }
+
+    // Obtener parámetros de paginación
+    const page = parseInt(req.query.page) || 1;
+    const limit = 50;
+    const skip = (page - 1) * limit;
+
+    try {
+      // Obtener total de documentos
+      const total = await Perdat.countDocuments({ human: true, status: true });
+
+      // Obtener datos paginados
+      const perdat = await Perdat.find({ human: true, status: true })
+        .skip(skip)
+        .limit(limit);
+
+      const respuesta = {
+        error: false,
+        codigo: 200,
+        mensaje: 'Datos de persona extraídos con éxito',
+        respuesta: {
+          data: perdat,
+          // page,
+          totalPages: Math.ceil(total / limit),
+          totalItems: total
+        }
+      };
+
+      res.json(respuesta);
+
+      // Función auditora
+      prueba.userId = req.body.acceso;
+      await multiFunct.addAudit(prueba);
+    } catch (err) {
+      const respuesta = {
+        error: true,
+        codigo: 501,
+        mensaje: 'Error inesperado',
+        respuesta: err.message
+      };
       res.json(respuesta);
     }
-    ///
-    else{
-      Perdat.find({human:true,status:true}, async function (err, perdat) {
-        if (err){
-          var respuesta = {
-            error: true,
-            codigo: 501,
-            mensaje: 'Error inesperado',
-            respuesta:err
-          };
-          res.json(respuesta);
-        }
-        else{
-          if(perdat && perdat.length==0){
-            var respuesta = {
-              error: false,
-              codigo: 200,
-              mensaje: 'No se encuentran personas registradas',
-              respuesta:perdat
-            };
-            res.json(respuesta);
-          }else{
-            var respuesta = {
-              error: false,
-              codigo: 200,
-              mensaje: 'Datos de persona extraidos con exito',
-              respuesta:perdat
-            };
-            res.json(respuesta);
-            ////Funcion auditora
-            console.log("aqui")
-            prueba.userId=req.body.acceso;
-            var control= await multiFunct.addAudit(prueba);
-            ////
-          }
-        }
-      });
-    }
-  }
-  else{
+  } else {
     var respuesta = {
       error: true,
       codigo: 502,
@@ -97,7 +100,7 @@ async function getPerdatInt(req, res) {
     };
     res.json(respuesta);
   }
-};
+}
 
 exports.createPerdat = function(req,res){
   createPerdatInt(req,res)
