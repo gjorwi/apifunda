@@ -24,43 +24,46 @@ async function loginInt (req, res, next) {
         process:"Login",
         nivel:1
     }
-    if(!req.body.usuario || !req.body.clave){
-        var respuesta = {
+    if(req.body.usuario && req.body.clave){
+        console.log(req.body.usuario)
+        var login =await User.findOne({usuario:req.body.usuario,status:true});
+        console.log("LOGININT: "+JSON.stringify(login))
+        if(login!=null){
+            console.log("Entro en usuario encontrado")
+            var verifyPws= await multiFunct.comparePasswrod(req.body.clave,login.clave);
+            console.log("Verificando la clave: "+JSON.stringify(verifyPws))
+            if(verifyPws){
+                console.log("Controlando: "+login)
+                var loginDat= await multiFunct.createJSONWebToken(login);
+                var respuesta = {
+                    error: false,
+                    codigo: 200,
+                    mensaje: 'Ingreso se ha realizado con exito!',
+                    respuesta:loginDat
+                };
+                res.json(respuesta);
+            }else{
+                var respuesta = {
+                    error: true,
+                    codigo: 501,
+                    mensaje: 'Usuario o clave incorrecto'
+                };
+                res.json(respuesta);
+            }
+        }else{
+            var respuesta = {
+                error: true,
+                codigo: 501,
+                mensaje: 'Usuario o clave incorrecto'
+            };
+            res.json(respuesta);
+        }
+    }
+    else{
+        respuesta = {
             error: true,
             codigo: 502,
             mensaje: 'Faltan datos requeridos'
-        };
-        return res.json(respuesta);
-    }
-    console.log(req.body.usuario)
-    var login =await User.findOne({usuario:req.body.usuario,status:true});
-    console.log("LOGININT: "+JSON.stringify(login))
-    if(login!=null){
-        var respuesta = {
-            error: true,
-            codigo: 501,
-            mensaje: 'Usuario o clave incorrecto'
-        };
-        return res.json(respuesta);
-    }
-    console.log("Entro en usuario encontrado")
-    var verifyPws= await multiFunct.comparePasswrod(req.body.clave,login.clave);
-    console.log("Verificando la clave: "+JSON.stringify(verifyPws))
-    if(verifyPws){
-        console.log("Controlando: "+login)
-        var loginDat= await multiFunct.createJSONWebToken(login);
-        var respuesta = {
-            error: false,
-            codigo: 200,
-            mensaje: 'Ingreso se ha realizado con exito!',
-            respuesta:loginDat
-        };
-        res.json(respuesta);
-    }else{
-        var respuesta = {
-            error: true,
-            codigo: 501,
-            mensaje: 'Usuario o clave incorrecto'
         };
         res.json(respuesta);
     }
