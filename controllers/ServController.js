@@ -234,6 +234,79 @@ async function createServInt (req, res) {
     res.json(respuesta);
   }
 };
+exports.updateServ = function(req,res){
+  updateServInt(req,res)
+  .catch(e => {
+    console.log('Problemas en el servidor ****: ' + e.message);
+    var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica updateServ'
+    };
+    res.json(respuesta);
+  });
+}
+async function updateServInt (req, res) {
+  var prueba={
+    process:"Actualizar Servicio",
+    modulo:"regcont",
+    menuItem:22
+  }
+  if(req.body.acceso && req.params.servCod){
+    ///Verificar acceso
+    var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+    if(!control){
+      var respuesta = {
+        error: true,
+        codigo: 501,
+        mensaje: 'No tiene acceso'
+      };
+      res.json(respuesta);
+    }
+    ////
+    else{
+      console.log("ACTUALIZANDO: "+JSON.stringify(req.body))
+      console.log("CODIGO: "+typeof(req.params.servCod))
+      let data={
+        servName: req.body.servicio.toUpperCase()
+      }
+      const result = await Serv.updateOne(
+        { servCod: req.params.servCod},
+        { $set: data },
+      );
+      console.log("ACTUALIZADO: "+JSON.stringify(result.nModified))
+      if(result.nModified > 0){
+        var respuesta = {
+          error: false,
+          codigo: 200,
+          mensaje: 'Datos del servicio actualizados con exito',
+          respuesta:result
+        };
+        res.json(respuesta);
+        ////Funcion auditora
+        prueba.userId=req.body.acceso;
+        var control= await multiFunct.addAudit(prueba);
+        console.log("registrado")
+        ////
+      }else{
+        var respuesta = {
+          error: true,
+          codigo: 501,
+          mensaje: 'Error al actualizar el servicio'
+        };
+        res.json(respuesta);
+      }
+    }
+  }
+  else{
+    var respuesta = {
+      error: true,
+      codigo: 502,
+      mensaje: 'Faltan datos requeridos'
+    };
+    res.json(respuesta);
+  }
+};
 exports.deleteServ = function(req,res){
   deleteServInt(req,res)
   .catch(e => {

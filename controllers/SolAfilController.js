@@ -380,6 +380,7 @@ async function createSolAfilInt (req, res) {
           }else{
             departMod='NA'
           }
+
             var data2={
                 afilId:val.afiCed,
                 cedula:val.afiCed,
@@ -407,6 +408,7 @@ async function createSolAfilInt (req, res) {
                 fechinglab:val.fechIngLab,
                 reqdocanex:val.reqDocAnex,
                 docanex:val.afiDocAnex,
+                statusAfil:val.statusAfil,
                 obs:val.obs,
                 condicion:val.condicion=="true"?true:false
             }
@@ -604,9 +606,9 @@ async function updateSolAfilInt (req, res) {
               _id=resultSavePer._id
               mensaje=false
             }else{
-              if(resultFindPer.status==false){
-                mensaje=true
-              }else{
+              // if(resultFindPer.status==false){
+              //   mensaje=true
+              // }else{
                 console.log("Direccion======:"+JSON.stringify(resultFind.direccion))
                 var data={
                   nombre:resultFind.nombre,
@@ -629,26 +631,26 @@ async function updateSolAfilInt (req, res) {
                 );
                 console.log("RESULT UPDATE PERDAT "+JSON.stringify(result))
                 mensaje=false
-              }
+              // }
               _id=resultFindPer._id
             }
             console.log("Punto critico")
-            if(mensaje){
-              console.log("Punto critico, si hay mensaje")
-              var respuesta = {
-                error: false,
-                codigo: 200,
-                mensaje: 'La persona se encuentra registrada pero esta deshabilitada, debe habilitarla.',
-                respuesta:[]
-              };
-              res.json(respuesta);
-            }else{
+            // if(mensaje){
+            //   console.log("Punto critico, si hay mensaje")
+            //   var respuesta = {
+            //     error: false,
+            //     codigo: 200,
+            //     mensaje: 'La persona se encuentra registrada pero esta deshabilitada, debe habilitarla.',
+            //     respuesta:[]
+            //   };
+            //   res.json(respuesta);
+            // }else{
               console.log("Punto critico, no hay mensaje")
               console.log("ID: "+req.params.solAfilId)
-              let resultFindAfiliado = await Afil.findOne({ afilId: req.params.solAfilId,status:true}).exec()
-              let resultFindAfiliado2 = await Afil.find({ afilId: req.params.solAfilId,status:true}).exec()
+              let resultFindAfiliado = await Afil.findOne({ afilId: req.params.solAfilId}).exec()
+              // let resultFindAfiliado2 = await Afil.find({ afilId: req.params.solAfilId,status:true}).exec()
               console.log("RESULT FIND Afiliado "+resultFindAfiliado)
-              console.log("RESULT FIND Afiliado2 "+resultFindAfiliado2)
+              // console.log("RESULT FIND Afiliado2 "+resultFindAfiliado2)
               console.log("llego aqui: "+JSON.stringify(resultFind))
               resultFind.idperdats=_id
               let resultFindPerdats = await Perdat.findOne({ cedula: resultFind.cedtit}).exec()
@@ -673,6 +675,7 @@ async function updateSolAfilInt (req, res) {
                 resultFindAfiliadoUpdate.reqdocanex=resultFind.reqdocanex
                 resultFindAfiliadoUpdate.docanex=resultFind.docanex
                 resultFindAfiliadoUpdate.obs=resultFind.obs
+                resultFindAfiliadoUpdate.status=resultFind.statusAfil
                 resultFindAfiliadoUpdate.Updated_date=new Date()
                 const result=await resultFindAfiliadoUpdate.save()
                 // const result = await Afil.findOneAndUpdate(
@@ -716,7 +719,7 @@ async function updateSolAfilInt (req, res) {
               };
               res.json(respuesta);
               // }
-            }
+            // }
           }else if(req.body.typeAprob==false){
             let resultFind = await SolAfil.findOneAndUpdate({ afilId: req.params.solAfilId,status:true,proceso: "pendiente"},{proceso:"rechazado",respaprob:req.body.respaprob},{new:true}).exec()
             var respuesta = {

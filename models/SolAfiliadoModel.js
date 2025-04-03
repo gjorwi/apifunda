@@ -20,19 +20,15 @@ var SolAfiliadoSchema = new Schema({
     },
     estCiv: {
         type: String,
-        required: [true, 'Apellido de la persona']
     },
     parro: {
         type: String,
-        required: [true, 'Apellido de la persona']
     },
     muni: {
         type: String,
-        required: [true, 'Apellido de la persona']
     },
     sect: {
         type: String,
-        required: [true, 'Apellido de la persona']
     },
     cedula: {
         type: Number,
@@ -43,7 +39,6 @@ var SolAfiliadoSchema = new Schema({
     },
     birthday:{
         type: Date,
-        required: [true, 'Fecha de nacimiento de la persona']
     },
     correo:{
         type: String
@@ -144,6 +139,10 @@ var SolAfiliadoSchema = new Schema({
     },
     obs: {
         type: String
+    },
+    statusAfil: {
+        type: Boolean,
+        default:true
     },
     status: {
         type: Boolean,

@@ -104,6 +104,8 @@ module.exports = function (app) {
     .post(multiFunct.authenticateJWT,serv.createServ);
   app.route('/serviciocode')
     .post(multiFunct.authenticateJWT,serv.getCodServ);
+  app.route('/servicio/update/:servCod')
+    .put(multiFunct.authenticateJWT,serv.updateServ)
   app.route('/servicio/:servId')
     // .put(multiFunct.authenticateJWT,serv.selectServ)
     .delete(multiFunct.authenticateJWT,serv.deleteServ);
