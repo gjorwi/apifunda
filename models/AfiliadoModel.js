@@ -76,34 +76,56 @@ var AfiliadoSchema = new Schema({
     },
     reqdocanex: {
         actMat:{
-            type: String
+            type: String,
+            default: "false"
         },
         cedEsp:{
-            type: String
+            type: String,
+            default: "false"
+        },
+        disMat:{
+            type: String,
+            default: "false"
+        },
+        actDef:{
+            type: String,
+            default: "false"
+        },
+        autRet:{
+            type: String,
+            default: "false"
         },
         partNacTit:{
-            type: String
+            type: String,
+            default: "false"
         },
-        cedPad:{
-            type: String
-        },
-        partNacHij:{
-            type: String
-        },
-        infMed:{
-            type: String
-        },
-        cedHij:{
-            type: String
-        },
-        cartSolt:{
-            type: String
-        },
-        depEcon:{
-            type: String
+        cedHij9A:{
+            type: String,
+            default: "false"
         },
         constEst:{
-            type: String
+            type: String,
+            default: "false"
+        },
+        cartSolt:{
+            type: String,
+            default: "false"
+        },
+        cartDepEco:{
+            type: String,
+            default: "false"
+        },
+        carDisc:{
+            type: String,
+            default: "false"
+        },
+        certPartNac:{
+            type: String,
+            default: "false"
+        },
+        cedPadres:{
+            type: String,
+            default: "false"
         }
     },
     obs: {

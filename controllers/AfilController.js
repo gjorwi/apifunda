@@ -176,43 +176,221 @@ async function readAfil2Int (req, res) {
                 res.json(respuesta);
             }else{
               console.log("DATA RESULT ----- "+ afildat)
-              if(afildat==null){
-                var ced=parseInt(req.params.afilId)
-                console.log("CEDULA: "+req.params.afilId)
-                console.log("CEDULA: "+ced)
-                Perdat.
-                findOne({cedula:ced,status:true}).
-                // populate('idperdats').
-                exec(async function (err, perdat) {
-                  if (err){
-                    var respuesta = {
-                        error: true,
-                        codigo: 501,
-                        mensaje: 'Error inesperado',
-                        respuesta:err
-                    };
-                    res.json(respuesta);
-                  }else{
-                    console.log("DATA AFILIADO: "+JSON.stringify(perdat))
-                    if(perdat==null){
+              if(afildat&&afildat.length==0){
+                const resultFindBen = await Afil.findOne({afilId:req.params.afilId})
+                .populate('idperdats')
+                .populate('idtitdats')
+                .exec()
+                console.log("DATA RESULT ----- "+ resultFindBen)
+                if(resultFindBen){
+                  let data=[]
+                  data.push(resultFindBen)
+                  var respuesta = {
+                    error: false,
+                    codigo: 203,
+                    mensaje: 'Datos de afiliado extraidos con exito',
+                    respuesta:data
+                  };
+                  res.json(respuesta);
+                }else{
+                  var ced=parseInt(req.params.afilId)
+                  console.log("CEDULA: "+req.params.afilId)
+                  console.log("CEDULA: "+ced)
+                  Perdat.
+                  findOne({cedula:ced,status:true}).
+                  // populate('idperdats').
+                  exec(async function (err, perdat) {
+                    if (err){
                       var respuesta = {
-                        error: false,
-                        codigo: 201,
-                        mensaje: 'No se encuentra afiliado, sin datos.',
-                        respuesta:afildat
+                          error: true,
+                          codigo: 501,
+                          mensaje: 'Error inesperado',
+                          respuesta:err
                       };
                       res.json(respuesta);
                     }else{
+                      console.log("DATA AFILIADO: "+JSON.stringify(perdat))
+                      if(perdat==null){
+                        var respuesta = {
+                          error: false,
+                          codigo: 201,
+                          mensaje: 'No se encuentra afiliado, sin datos.',
+                          respuesta:afildat
+                        };
+                        res.json(respuesta);
+                      }else{
+                        var respuesta = {
+                          error: false,
+                          codigo: 202,
+                          mensaje: 'No se encuentra afiliado, con datos.',
+                          respuesta:perdat
+                        };
+                        res.json(respuesta);
+                      }
+                    }
+                  })
+                }
+              }else{
+                var respuesta = {
+                    error: false,
+                    codigo: 200,
+                    mensaje: 'Datos de afiliado extraidos con exito',
+                    respuesta:afildat
+                };
+                res.json(respuesta);
+              }
+              ////Funcion auditora
+              prueba.userId=req.body.acceso;
+              prueba.modulo=req.body.moduloId;
+              var control= await multiFunct.addAudit(prueba);
+              console.log("registrado")
+              ////
+            }
+        });
+    }
+    }else{
+        var respuesta = {
+            error: true,
+            codigo: 502,
+            mensaje: 'Faltan datos requeridos'
+        };
+        res.json(respuesta);
+    }
+};
+exports.readAfil3 = function(req,res){
+  readAfil3Int(req,res)
+  .catch(e => {
+    console.log('Problemas en el servidor ****: ' + e.message);
+    var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica readAfil3'
+    };
+    res.json(respuesta);
+  });
+}
+
+async function readAfil3Int (req, res) {
+  var prueba={
+    process:"Consultar Afiliado",
+    modulo:"recepcion",
+    menuItem:8
+  }
+  console.log("DATA: ************"+JSON.stringify(req.body))
+  if(req.body.acceso && req.body.moduloId && req.params.afilId){
+    ///Verificar acceso
+    var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+    if(!control){
+      var respuesta = {
+        error: true,
+        codigo: 501,
+        mensaje: 'No tiene acceso'
+      };
+      res.json(respuesta);
+    }
+    ////
+    else{
+      //evaluar si afilId es una cedula o un nombre, si es cedula buscar por cedtit en AfiliadoModel, si son nombre o apellido buscar en PerdatsModel para extraer la cedula
+      console.log("ID AFILIADO BUSQUEDA: "+req.params.afilId)
+      let searchQuery;
+      if(/^\d+$/.test(req.params.afilId)) {
+        searchQuery = {cedtit: req.params.afilId};
+      } 
+      else {
+          // Buscar por nombre/apellido en PerdatsModel primero
+          const personas = await Perdat.find({
+            $or: [
+                {nombre: new RegExp(req.params.afilId, 'i')},
+                {apellido: new RegExp(req.params.afilId, 'i')}
+            ]
+          });
+          
+          if(personas && personas.length > 0) {
+              // Crear array de cédulas encontradas
+              const cedulas = personas.map(p => p.cedula);
+              searchQuery = {cedtit: {$in: cedulas}};
+          } else {
+              // Si no hay coincidencias, buscar directamente por el valor
+              // searchQuery = {cedtit: req.params.afilId};
+              var respuesta = {
+                error: false,
+                codigo: 201,
+                mensaje: 'No se encuentra afiliado, sin datos.',
+                respuesta:afildat
+              };
+              res.json(respuesta);
+              return;
+          }
+      }  
+      Afil.
+        find(searchQuery)
+        .populate('idperdats')
+        .populate('idtitdats')
+        .exec(async function (err, afildat) {
+            if (err){
+                var respuesta = {
+                    error: true,
+                    codigo: 501,
+                    mensaje: 'Error inesperado',
+                    respuesta:err
+                };
+                res.json(respuesta);
+            }else{
+              console.log("DATA RESULT ----- "+ afildat)
+              if(afildat&&afildat.length==0){
+                const resultFindBen = await Afil.findOne({afilId:req.params.afilId})
+                .populate('idperdats')
+                .populate('idtitdats')
+                .exec()
+                console.log("DATA RESULT ----- "+ resultFindBen)
+                if(resultFindBen){
+                  let data=[]
+                  data.push(resultFindBen)
+                  var respuesta = {
+                    error: false,
+                    codigo: 203,
+                    mensaje: 'Datos de afiliado extraidos con exito',
+                    respuesta:data
+                  };
+                  res.json(respuesta);
+                }else{
+                  var ced=parseInt(req.params.afilId)
+                  console.log("CEDULA: "+req.params.afilId)
+                  console.log("CEDULA: "+ced)
+                  Perdat.
+                  findOne({cedula:ced,status:true}).
+                  // populate('idperdats').
+                  exec(async function (err, perdat) {
+                    if (err){
                       var respuesta = {
-                        error: false,
-                        codigo: 202,
-                        mensaje: 'No se encuentra afiliado, con datos.',
-                        respuesta:perdat
+                          error: true,
+                          codigo: 501,
+                          mensaje: 'Error inesperado',
+                          respuesta:err
                       };
                       res.json(respuesta);
+                    }else{
+                      console.log("DATA AFILIADO: "+JSON.stringify(perdat))
+                      if(perdat==null){
+                        var respuesta = {
+                          error: false,
+                          codigo: 201,
+                          mensaje: 'No se encuentra afiliado, sin datos.',
+                          respuesta:afildat
+                        };
+                        res.json(respuesta);
+                      }else{
+                        var respuesta = {
+                          error: false,
+                          codigo: 202,
+                          mensaje: 'No se encuentra afiliado, con datos.',
+                          respuesta:perdat
+                        };
+                        res.json(respuesta);
+                      }
                     }
-                  }
-                })
+                  })
+                }
               }else{
                 var respuesta = {
                     error: false,
@@ -274,8 +452,13 @@ async function readAfilTitInt (req, res) {
     ////
     else{
       console.log("ID AFILIADO BUSQUEDA: "+req.params.afilId)
+      //buscar type='titular' en minuscula y mayuscula
         Afil.
-        findOne({afilId:req.params.afilId,status:true,type:'titular'}).
+        findOne({
+          afilId: req.params.afilId,
+          status: true,
+          type: { $regex: /^titular$/i }  // Case-insensitive search
+      }).
         populate('idperdats').
         exec(async function (err, afildat) {
             if (err){

@@ -676,7 +676,7 @@ async function updateSolAfilInt (req, res) {
                 resultFindAfiliadoUpdate.docanex=resultFind.docanex
                 resultFindAfiliadoUpdate.obs=resultFind.obs
                 resultFindAfiliadoUpdate.status=resultFind.statusAfil
-                resultFindAfiliadoUpdate.Updated_date=new Date()
+                // resultFindAfiliadoUpdate.Updated_date=new Date()
                 const result=await resultFindAfiliadoUpdate.save()
                 // const result = await Afil.findOneAndUpdate(
                 //   { afilId: req.params.solAfilId,human:true},

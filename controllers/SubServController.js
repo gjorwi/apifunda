@@ -299,6 +299,79 @@ async function createSubServInt (req, res) {
     res.json(respuesta);
   }
 };
+exports.updateSubServ = function(req,res){
+  updateSubServInt(req,res)
+  .catch(e => {
+    console.log('Problemas en el servidor ****: ' + e.message);
+    var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica updateSubServ'
+    };
+    res.json(respuesta);
+  });
+}
+async function updateSubServInt (req, res) {
+  var prueba={
+    process:"Actualizar Sub Servicio",
+    modulo:"regcont",
+    menuItem:22
+  }
+  if(req.body.acceso && req.params.subServCod){
+    ///Verificar acceso
+    var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+    if(!control){
+      var respuesta = {
+        error: true,
+        codigo: 501,
+        mensaje: 'No tiene acceso'
+      };
+      res.json(respuesta);
+    }
+    ////
+    else{
+      let data={
+        servName: req.body.subservicio.toUpperCase()
+      }
+      console.log("ACTUALIZANDO: "+JSON.stringify(data))
+      console.log("CODIGO: "+req.params.subServCod)
+      const result = await Serv.updateOne(
+        { servCod: req.params.subServCod},
+        { $set: data },
+      );
+      console.log("ACTUALIZADO: "+JSON.stringify(result.nModified))
+      if(result.nModified > 0){
+        var respuesta = {
+          error: false,
+          codigo: 200,
+          mensaje: 'Datos del sub-servicio actualizados con exito',
+          respuesta:result
+        };
+        res.json(respuesta);
+        ////Funcion auditora
+        prueba.userId=req.body.acceso;
+        var control= await multiFunct.addAudit(prueba);
+        console.log("registrado")
+        ////
+      }else{
+        var respuesta = {
+          error: true,
+          codigo: 501,
+          mensaje: 'Error al actualizar el sub-servicio'
+        };
+        res.json(respuesta);
+      }
+    }
+  }
+  else{
+    var respuesta = {
+      error: true,
+      codigo: 502,
+      mensaje: 'Faltan datos requeridos'
+    };
+    res.json(respuesta);
+  }
+};
 exports.deleteSubServ = function(req,res){
   deleteSubServInt(req,res)
   .catch(e => {

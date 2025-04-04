@@ -42,6 +42,8 @@ module.exports = function (app) {
     .put(multiFunct.authenticateJWT,afil.updateAfil)
   app.route('/afiliado2/:afilId')
     .post(multiFunct.authenticateJWT,afil.readAfil2)
+  app.route('/afiliado3/:afilId')
+    .post(multiFunct.authenticateJWT,afil.readAfil3)
   // app.route('/afiliadoUpdate/:afilId')
   //   .put(multiFunct.authenticateJWT,afil.updateAfil2)
   app.route('/afiliadotit/:afilId')
@@ -117,6 +119,8 @@ module.exports = function (app) {
     .post(multiFunct.authenticateJWT,subserv.createSubServ);
   app.route('/subserviciocode')
     .post(multiFunct.authenticateJWT,subserv.getCodSubServ);
+  app.route('/subservicio/update/:subServCod')
+    .put(multiFunct.authenticateJWT,subserv.updateSubServ)
   app.route('/subservicio/:servId')
     .put(multiFunct.authenticateJWT,subserv.selectSubServ)
     .delete(multiFunct.authenticateJWT,subserv.deleteSubServ);

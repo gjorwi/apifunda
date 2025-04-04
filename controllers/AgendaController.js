@@ -46,7 +46,7 @@ async function getAgendaInt(req, res) {
       var formatFech = fechaNow.getFullYear()+"-"+((fechaNow.getMonth()+1)<10 ? "0"+(fechaNow.getMonth()+1) : (fechaNow.getMonth()+1))+"-"+(fechaNow.getDate()<10 ? "0"+fechaNow.getDate() : fechaNow.getDate())
       console.log("Fecha: "+JSON.stringify(formatFech))
       console.log("BUSQUEDA Agendas: "+JSON.stringify(req.body))
-      Agend.find({status:true,fechAgen:{"$gte":formatFech},proceso:"pendiente"})
+      Agend.find({status:true,proceso:"pendiente"})
       .populate({
         path: 'idModPago',
         model: 'Modalidades',
@@ -144,7 +144,7 @@ async function getAgendaPerInt(req, res) {
       var formatFech = fechaNow.getFullYear()+"-"+((fechaNow.getMonth()+1)<10 ? "0"+(fechaNow.getMonth()+1) : (fechaNow.getMonth()+1))+"-"+(fechaNow.getDate()<10 ? "0"+fechaNow.getDate() : fechaNow.getDate())
       console.log("Fecha: "+JSON.stringify(formatFech))
       console.log("BUSQUEDA Agendas: "+JSON.stringify(req.body))
-      Agend.find({status:true,fechAgen:formatFech,proceso:"pendiente"})
+      Agend.find({status:true,fechAgen: { $lte: formatFech },proceso:"pendiente"})
       .populate({
         path: 'idModPago',
         model: 'Modalidades',
@@ -357,21 +357,20 @@ async function createAgendaInt (req, res) {
         try{
             console.log(req.body)
             var val=req.body
-            ////AGREGAR FECHA PERSONALIZADA 
+            ////AGREGAR FECHA PERSONALIZADA con el siguiente formato 'Lunes 25 de Abril del 2023'
+            const fecha = new Date(val.fechAgen);
+            const options = {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            };
+            const formatFech = fecha.toLocaleDateString('es-ES', options)
+              .replace(/,/g, '')  // Elimina comas si las hubiera
+              .replace(/(\d+) de (\w+) del?/, '$1 de $2 del'); // Asegura formato "del"
 
-            let MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-            let DIA = ["Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"];
-            var newD=new Date(val.fechAgen)
-            var newD2=val.fechAgen.split("-")
-            var month=newD2[1].split("")
-            month=month[0]==0 ? month[1] : month[0]+month[1]
-            var nowDate=new Date()
-            var formatNow=nowDate.getFullYear()+"-"+((nowDate.getMonth()+1)<10 ? "0"+(nowDate.getMonth()+1) : (nowDate.getMonth()+1))+"-"+(nowDate.getDate()<10 ? "0"+nowDate.getDate() : nowDate.getDate())
-            var splitNow=formatNow.split("-")
-            var format=val.fechAgen.split("-")
 
             // if(parseInt(format[0]+format[1]+format[2]) >= parseInt(splitNow[0]+splitNow[1]+splitNow[2])){
-                var formatFech=DIA[newD.getDay()]+" "+newD2[2]+" de "+MESES[month-1]+" del "+newD2[0]
                 var data={
                     countPac:val.countPac,
                     idModPago:val.idModPago,
