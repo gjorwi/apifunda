@@ -212,8 +212,10 @@ async function readcheckperInt (req, res) {
     ////
     else{
       console.log("DATA: "+JSON.stringify(req.params.checkperId))
-      Afil.find({status:true, nomi: { $ne: "CONTRATADO" }})
-      .or([{cedtit:req.params.checkperId},{cedpad:req.params.checkperId},{cedmad:req.params.checkperId},{afilId:req.params.checkperId}])
+      const tresAnosAtras = new Date();
+      tresAnosAtras.setFullYear(tresAnosAtras.getFullYear() - 3);
+      Afil.find({status:true,Updated_date: { $gte: tresAnosAtras }})
+      .or([{cedtit:req.params.checkperId},{afilId:req.params.checkperId}])
       .populate('idperdats')
       .populate('idtitdats')
       .exec(async function (err, afildat) {
@@ -271,12 +273,66 @@ async function readcheckperInt (req, res) {
           
         }
         else{
-          console.log("AFILIADO")
+
+          console.log("AFILIADO:"+JSON.stringify(afildat))
+          // 1. Buscar titular
+          const titular = afildat.find(ele => ele.type?.toLowerCase() === 'titular');
+
+          if(titular) {
+              // Verificar si el titular es contratado
+              if(/CONTRATADO/i.test(titular.nomi)) {
+                  console.log("Titular es contratado - requiere exoneración");
+                  return res.json({
+                      error: false,
+                      codigo: 200,
+                      mensaje: 'El titular es contratado, requiere exoneracion',
+                      respuesta: null
+                  });
+              }
+          } 
+          else {
+            console.log("No hay titular, buscar beneficiarios");
+              // 2. Si no hay titular, buscar beneficiarios
+              const beneficiarios = afildat.filter(ele => ele.type?.toLowerCase() === 'beneficiario');
+              
+              if(beneficiarios.length > 0) {
+                console.log("Encontrados beneficiarios");
+                  // Obtener cédulas de titulares de los beneficiarios
+                  const cedulasTitulares = [...new Set(beneficiarios.map(b => b.cedtit))];
+                  console.log("Cédulas de titulares: ", cedulasTitulares);
+                  // Buscar datos de los titulares
+                  const titulares = await Afil.find({
+                      cedtit: { $in: cedulasTitulares },
+                      status: true
+                  }).exec();
+
+                  // Verificar cada titular
+                  const tresAnosAtras = new Date();
+                  tresAnosAtras.setFullYear(tresAnosAtras.getFullYear() - 3);
+                  
+                  const titularesInvalidos = titulares.some(tit => 
+                      /CONTRATADO/i.test(tit.nomi) || 
+                      (tit.Updated_date && new Date(tit.Updated_date) < tresAnosAtras)
+                  );
+
+                  if(titularesInvalidos) {
+                      console.log("Titular de beneficiario inválido - requiere exoneración");
+                      return res.json({
+                          error: false,
+                          codigo: 200,
+                          mensaje: 'El titular del beneficiario no cumple los requisitos',
+                          respuesta: null
+                      });
+                  }
+              }
+          }
+
+          // 3. Si pasa todas las validaciones, enviar datos
           var respuesta = {
               error: false,
               codigo: 200,
               mensaje: 'Datos de los afiliados extraidos con exito',
-              respuesta:afildat
+              respuesta: afildat
           };
           res.json(respuesta);
           ////Funcion auditora
