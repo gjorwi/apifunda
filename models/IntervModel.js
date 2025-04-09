@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 var IntervSchema = new Schema({
   intervName: {
     type: String,
-    required: [true, 'Nombre del municipio'],
+    required: [true, 'Nombre del intervencion'],
     unique:true
   },
   status: {

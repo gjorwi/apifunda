@@ -56,6 +56,7 @@ async function getAgendaInt(req, res) {
         }
       })
       .populate('idprestdats')
+      .populate('idEspec')
       .populate('pacientes.idperdats')
       .sort({fechAgen:-1})
       .exec( async function (err, agenddat) {
@@ -153,6 +154,7 @@ async function getAgendaPerInt(req, res) {
             model: 'Servicios'
         }
       })
+      .populate('idEspec')
       .populate('idprestdats')
       .populate('pacientes.idperdats')
       .populate('pacientes.idafildats')
@@ -252,6 +254,10 @@ async function getAgendaVistInt(req, res) {
             path: 'servicios',
             model: 'Servicios'
         }
+      })
+      .populate({
+        path: 'idEspec',
+        model: 'Especialidades'
       })
       .populate({
         path: 'idModPago',
@@ -374,13 +380,14 @@ async function createAgendaInt (req, res) {
                 var data={
                     countPac:val.countPac,
                     idModPago:val.idModPago,
+                    idEspec:val.especialidad,
                     idprestdats:val.doctor,
                     fechAgen:val.fechAgen,
                     fechaPer:formatFech
                 }
                 var newAgend= new Agend(data);
                 console.log("Datos Set: "+JSON.stringify(newAgend))
-                let resultFind = await Agend.findOne({idModPago:data.idModPago,fechaPer:data.fechaPer,idprestdats:data.idprestdats,proceso:"pendiente"}).exec()
+                let resultFind = await Agend.findOne({idEspec:data.idEspec,fechaPer:data.fechaPer,idprestdats:data.idprestdats,proceso:"pendiente"}).exec()
                 console.log("NOSE QUE PASA: "+JSON.stringify(newAgend))
                 if(resultFind){
                     var respuesta = {
@@ -572,21 +579,21 @@ async function updateAgendaInt (req, res, next) {
               }
               console.log("Dato de afiliados: "+JSON.stringify(afildats))
               
-              let fechFrom=new Date()
-              let fechTo=datFech.Updated_date?new Date(datFech.Updated_date):new Date(datFech.Created_date)
-              var fechUpdated= await multiFunct.monthDiff(fechTo,fechFrom);
+              // let fechFrom=new Date()
+              // let fechTo=datFech.Updated_date?new Date(datFech.Updated_date):new Date(datFech.Created_date)
+              // var fechUpdated= await multiFunct.monthDiff(fechTo,fechFrom);
               
-              console.log("Fecha de actualizacion: "+JSON.stringify(fechUpdated))
-              if(fechUpdated>12){
-                var respuesta = {
-                  error: false,
-                  codigo: 200,
-                  mensaje: 'No se pudo agregar, Paciente se encuentra desactualizado.',
-                  respuesta:datFech
-                };
-                res.json(respuesta);
-                return;
-              }
+              // console.log("Fecha de actualizacion: "+JSON.stringify(fechUpdated))
+              // if(fechUpdated>12){
+              //   var respuesta = {
+              //     error: false,
+              //     codigo: 200,
+              //     mensaje: 'No se pudo agregar, Paciente se encuentra desactualizado.',
+              //     respuesta:datFech
+              //   };
+              //   res.json(respuesta);
+              //   return;
+              // }
               let dataInsert=null
               if(req.body.type=='AFILIADO'){
                 dataInsert={"idperdats" : req.body.idPac,"idafildats" : req.body.idafildats,"typePac" : req.body.type}

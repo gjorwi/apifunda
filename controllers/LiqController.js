@@ -50,11 +50,12 @@ async function liquidarInt (req, res) {
     else{
         console.log("valores a liquidar: "+ JSON.stringify(req.body))
         const allData=req.body.visto
-        const {pacientes,idprestdats,fechAgen,idModPago}=req.body.visto
+        const {pacientes,idprestdats,fechAgen,idModPago,idEspec}=req.body.visto
         console.log('PACIENTES:******'+JSON.stringify(pacientes))
         console.log('idprestdats:******'+JSON.stringify(idprestdats))
         console.log('fechAgen:******'+JSON.stringify(fechAgen))
         console.log('idModPago:******'+JSON.stringify(idModPago))
+        console.log('idEspec:******'+JSON.stringify(idEspec))
         console.log("Inicio")
         // var respuesta = {
         //     error: false,
@@ -68,38 +69,35 @@ async function liquidarInt (req, res) {
           // console.log("cedprest: "+val.idprestdats.cedPrest)
               let arrFactNew=[]
               let count=0;
-              let numbFact=0;
               for await (let paciente of pacientes) {
                 if(paciente.confirmCit){
-                  // let findNumbFact = await factura.find().sort({numbFact: -1}).limit(1).select({numbFact: 1, _id:0}).exec(); //when fail its goes to catch
                   count++
                   console.log("paciente: "+count)
-                  // console.log(`NumbFact antes: ${countNumbFact}`)
-                  // if(findNumbFact.length!=0){
-                  //   numbFact=parseInt(findNumbFact[0].numbFact)+1
-                  //   numbFact= await multiFunct.addCeros(numbFact,5);
-                  // }else{
-                  //   numbFact=1
-                  //   numbFact= await multiFunct.addCeros(numbFact,5);
-                  // }
-                  // countNumbFact=numbFact
-                  // console.log(`NumbFact despues: ${countNumbFact}`)
-                  // pacMod= await multiFunct.sortPac(pacientes,numbFact);
-                  // let findCodModPago = await ModPago.findOne({status:true,cedPrest:val.idprestdats.cedPrest,servCod:val.idservdats.servCod}).select({codModPago: 1,typePag:1,costPac:1}).exec(); //when fail its goes to catch
-                  // console.log(`Codigo modalidad de Pago: ${findCodModPago}`)
-                  // const {_id,codModPago,typePag,costPac}=findCodModPago
-                  // console.log(`Codigo modalidad de Pago _id: ${_id}`)
-                  // console.log(`_id paciente afiliado/exonerado: ${paciente?.idafildats}`)
                   paciente.servicios.map(async (servicio)=>{
+                    console.log("Servicio: "+JSON.stringify(servicio))
+                    //buscar en idModPago la modalidad de pago que corresponde al servicio sin consultar la base de datos
+                    const findCodModPago = idModPago.find((modalidad) => {
+                      // Buscar si algún servicio de esta modalidad coincide con el código de servicio
+                      console.log(`Modalidad de pago: ${JSON.stringify(modalidad.servicios)}`);
+                      console.log(`Servicio: ${JSON.stringify(servicio.idServ)}`);
+
+                      return modalidad.servicios.some(s => s._id === servicio.idServ._id);
+                    });
+                    
+                    if (!findCodModPago) {
+                      console.log(`No se encontró modalidad de pago para el servicio ${servicio.idServ.servCod}`);
+                      return;
+                    }
+                    
+                    const {_id, codModPago} = findCodModPago
+                    console.log(`Modalidad de pago encontrada: ${codModPago}`);
 
                     var data2={
-                      // numbFact:numbFact,
-                      idModPago:idModPago._id,
-                      especCod:idModPago.idEspec.especCod,
-                      especialidad:idModPago.especialidad,
+                      idModPago:_id,
+                      especCod:idEspec.especCod,
+                      especialidad:idEspec.especName,
                       cedPrest:idprestdats.cedPrest,
                       idprestdats:idprestdats._id,
-                      // idperdats:paciente.idperdats._id,
                       servCod:servicio.idServ.servCod,
                       subservCod:servicio.idSubServ?servicio.idSubServ.servCod:null,
                       idserv:servicio.idServ._id,

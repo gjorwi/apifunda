@@ -225,13 +225,32 @@ async function createModInt (req, res) {
                 costPac:val.costPac,
                 codModPago:codModPago
               }
-              var dataModPago={
-                status:false
+              // Verificar si ya existe un servicio registrado con las mismas condiciones
+              const existingService = await ModPag.findOne({
+                idpresdats: data.idpresdats,
+                idEspec: data.idEspec,
+                servicios: { $in: val.servicios },
+                status: true
+              });
+
+              if (existingService) {
+                var respuesta = {
+                  error: false,
+                  codigo: 500,
+                  mensaje: 'Existe un servicio registrado con las mismas condiciones',
+                  respuesta:{}
+                };
+                return res.json(respuesta);
+              }
+
+              // Si no existe, procedemos a actualizar y crear el nuevo registro
+              var dataModPago = {
+                status: false
               }
               var updatevalue = { $set: dataModPago };
               var options = { new: true }
-              const resultUpdate = await ModPag.findOneAndUpdate({idpresdats:data.idpresdats,idEspec:data.idEspec,status:true},updatevalue,options);
-              var newModPago= new ModPag(data);
+              // const resultUpdate = await ModPag.findOneAndUpdate({idpresdats:data.idpresdats,idEspec:data.idEspec,status:true},updatevalue,options);
+              var newModPago = new ModPag(data);
               saveNewPrest = await newModPago.save();
           //   })
           // )
@@ -307,6 +326,92 @@ async function readPrestInt (req, res, next) {
         console.log("ENTRO getPrest"+req.params.prestId)
         ModPag
           .findOne({idpresdats:req.params.prestId,status:true})
+          // .or(idservdats)
+          .populate({
+            path: 'servicios',
+            model: 'Servicios'
+          })
+          .exec(async function (err, user) {
+              if (err){
+                var respuesta = {
+                  error: true,
+                  codigo: 501,
+                  mensaje: 'Error inesperado',
+                  respuesta:err
+                };
+                res.json(respuesta);
+              }else{
+                if(user==null){
+                  var respuesta = {
+                    error: false,
+                    codigo: 200,
+                    mensaje: 'El prestador no posee una modalidad de pago registrada',
+                    respuesta:user
+                  };
+                  res.json(respuesta);
+                }else{
+                  var respuesta = {
+                    error: false,
+                    codigo: 200,
+                    mensaje: 'Datos de modalidad extraidos con exito',
+                    respuesta:user
+                  };
+                  res.json(respuesta);
+                  ////Funcion auditora
+                  prueba.userId=req.body.acceso;
+                  var control= await multiFunct.addAudit(prueba);
+                  console.log("registrado")
+                  ////
+                }
+              }
+          });
+      }
+  }else{
+      var respuesta = {
+          error: true,
+          codigo: 502,
+          mensaje: 'Faltan datos requeridos'
+      };
+      res.json(respuesta);
+  }
+};
+exports.readPrestAll = function(req,res){
+  readPrestAllInt(req,res)
+  .catch(e => {
+      console.log('Problemas en el servidor ****: ' + e.message);
+      var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica readPrestAll'
+      };
+      res.json(respuesta);
+  });
+}
+
+async function readPrestAllInt (req, res, next) {
+  var prueba={
+    process:"Consultar modalidades",
+    modulo:"regcont",
+    menuItem:31
+  }
+  if(req.body.acceso && req.body.moduloId){
+      ///Verificar acceso
+    
+      var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+      var control=true
+      if(!control){
+          var respuesta = {
+              error: true,
+              codigo: 501,
+              mensaje: 'No tiene acceso'
+          };
+          res.json(respuesta);
+      }
+      ////
+      else{
+        console.log("ENTRO getPrest"+req.params.prestId)
+        ModPag
+          .find({idpresdats:req.params.prestId,status:true})
           // .or(idservdats)
           .populate({
             path: 'servicios',

@@ -136,6 +136,16 @@ var AfiliadoSchema = new Schema({
         type: String,
         default:'AFILIADO'
     },
+    idUserDats: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Users',
+        default:null
+    },
+    idActu: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Updates',
+        default:null
+    },
     status: {
         type: Boolean,
         default:true

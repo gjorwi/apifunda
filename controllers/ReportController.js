@@ -206,7 +206,14 @@ async function getReporte2Int(req, res) {
         }
         // Realizar la consulta a la base de datos utilizando las fechas calculadas
         const resultFindReportExt = await Atenciones.find(query)
-        .populate('idModPago')
+        .populate({
+          path: 'idModPago',
+          model: 'Modalidades',
+          populate: {
+              path: 'servicios',
+              model: 'Servicios'
+          }
+        })
         .populate('idprestdats')
         .populate('idserv')
         .populate('idsubserv')

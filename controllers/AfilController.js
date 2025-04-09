@@ -418,6 +418,100 @@ async function readAfil3Int (req, res) {
         res.json(respuesta);
     }
 };
+exports.readAfilUpdatesDat = function(req,res){
+  readAfilUpdatesDatInt(req,res)
+  .catch(e => {
+    console.log('Problemas en el servidor ****: ' + e.message);
+    var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica readAfilUpdatesDat'
+    };
+    res.json(respuesta);
+  });
+}
+
+async function readAfilUpdatesDatInt (req, res) {
+  var prueba={
+    process:"Consultar Afiliado a actualizar",
+    modulo:"recepcion",
+    menuItem:8
+  }
+  console.log("DATA: ************"+JSON.stringify(req.body))
+  if(req.body.acceso && req.body.moduloId && req.params.afilId){
+    ///Verificar acceso
+    var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+    if(!control){
+      var respuesta = {
+        error: true,
+        codigo: 501,
+        mensaje: 'No tiene acceso'
+      };
+      res.json(respuesta);
+    }
+    ////
+    else{
+      //evaluar si afilId es una cedula o un nombre, si es cedula buscar por cedtit en AfiliadoModel, si son nombre o apellido buscar en PerdatsModel para extraer la cedula
+      console.log("ID AFILIADO BUSQUEDA: "+req.params.afilId)
+      let searchQuery;
+      if(/^\d+$/.test(req.params.afilId)) {
+        searchQuery = {cedtit: req.params.afilId};
+      } 
+      else {
+        var respuesta = {
+          error: false,
+          codigo: 201,
+          mensaje: 'No se encuentra afiliado.',
+          respuesta:[]
+        };
+        res.json(respuesta);
+        return;
+      }  
+      Afil.
+        find(searchQuery)
+        .populate('idperdats')
+        .populate('idtitdats')
+        .exec(async function (err, afildat) {
+            if (err){
+                var respuesta = {
+                    error: true,
+                    codigo: 501,
+                    mensaje: 'Error inesperado',
+                    respuesta:err
+                };
+                res.json(respuesta);
+            }else{
+              console.log("DATA RESULT ----- "+ afildat)
+              if(afildat&&afildat.length==0){
+                var respuesta = {
+                  error: false,
+                  codigo: 201,
+                  mensaje: 'No se encuentra afiliado.',
+                  respuesta:[]
+                };
+                res.json(respuesta);
+                return;
+              }else{
+                var respuesta = {
+                    error: false,
+                    codigo: 200,
+                    mensaje: 'Datos de afiliado extraidos con exito',
+                    respuesta:afildat
+                };
+                res.json(respuesta);
+              }
+            }
+        });
+    }
+    }else{
+        var respuesta = {
+            error: true,
+            codigo: 502,
+            mensaje: 'Faltan datos requeridos'
+        };
+        res.json(respuesta);
+    }
+};
 exports.readAfilTit = function(req,res){
   readAfilTitInt(req,res)
   .catch(e => {

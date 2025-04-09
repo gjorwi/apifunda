@@ -64,6 +64,11 @@ var AtencionesSchema = new Schema({
     type: String,
     required: [true, 'Fecha de la atencion']
   },
+  idUserDats: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Users',
+    default:null
+},
   status: {
     type: Boolean,
     default:true

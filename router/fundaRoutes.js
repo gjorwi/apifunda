@@ -44,6 +44,9 @@ module.exports = function (app) {
     .post(multiFunct.authenticateJWT,afil.readAfil2)
   app.route('/afiliado3/:afilId')
     .post(multiFunct.authenticateJWT,afil.readAfil3)
+  app.route('/afiliado/updatesdat/:afilId')
+    // .post(multiFunct.authenticateJWT,afil.updateAfil)
+    .put(multiFunct.authenticateJWT,afil.readAfilUpdatesDat)
   // app.route('/afiliadoUpdate/:afilId')
   //   .put(multiFunct.authenticateJWT,afil.updateAfil2)
   app.route('/afiliadotit/:afilId')
@@ -133,6 +136,8 @@ var modpag = require('../controllers/ModpagController');
   app.route('/prestall')
     .put(multiFunct.authenticateJWT,modpag.getPrestAll)
 
+  app.route('/modpago/all/:prestId')
+  .post(multiFunct.authenticateJWT,modpag.readPrestAll)
   app.route('/modpago/:prestId')
   .post(multiFunct.authenticateJWT,modpag.readPrest)
   // .put(multiFunct.authenticateJWT,prest.updatePrest)

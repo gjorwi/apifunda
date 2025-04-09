@@ -10,10 +10,14 @@ var AgendaSchema = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Prestadores'
   },
-  idModPago: {
+  idEspec: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Especialidades'
+  },
+  idModPago: [{
     type: mongoose.Schema.ObjectId,
     ref: 'Modalidades'
-  },
+  }],
   countPac: {
     type: Number,
     required: [true, 'Cantidad de pacientes']
@@ -68,6 +72,11 @@ var AgendaSchema = new Schema({
   status: {
     type: Boolean,
     default:true
+  },
+  idUserDats: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Users',
+    default:null
   },
   Created_date: {
     type: Date,

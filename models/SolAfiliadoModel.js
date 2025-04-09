@@ -181,6 +181,11 @@ var SolAfiliadoSchema = new Schema({
         type: String,
         default:"En espera de revisión"
     },
+    idUserDats: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Users',
+        default:null
+    },
     Created_date: {
         type: Date,
         default: Date.now
