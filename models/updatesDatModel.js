@@ -11,6 +11,74 @@ var UpdatesDatSchema = new Schema({
     type: Boolean,
     default:false
   },
+  docanex: {
+    docced: {
+        type: Boolean,
+        default: false
+    },
+    docnomb: {
+        type: Boolean,
+        default: false
+    },
+    docrecpag: {
+        type: Boolean,
+        default: false
+    }
+  },
+  reqdocanex: {
+      actMat:{
+          type: String,
+          default: "false"
+      },
+      cedEsp:{
+          type: String,
+          default: "false"
+      },
+      disMat:{
+          type: String,
+          default: "false"
+      },
+      partNacTit:{
+          type: String,
+          default: "false"
+      },
+      cedHij9A:{
+          type: String,
+          default: "false"
+      },
+      constEst:{
+          type: String,
+          default: "false"
+      },
+      cartSolt:{
+          type: String,
+          default: "false"
+      },
+      cartDepEco:{
+          type: String,
+          default: "false"
+      },
+      carDisc:{
+          type: String,
+          default: "false"
+      },
+      certPartNac:{
+          type: String,
+          default: "false"
+      },
+      cedPadres:{
+          type: String,
+          default: "false"
+      },
+      actDef:{
+          type: String,
+          default: "false"
+      },
+      autRet:{
+          type: String,
+          default: "false"
+      },
+  },
   idUserDatsCreate: {
     type: mongoose.Schema.ObjectId,
     ref: 'Users',

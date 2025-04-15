@@ -6,6 +6,7 @@ Perdat = mongoose2.model('Perdats');
 var mongoose3 = require('../models/PermisoModel'),
 Permiso = mongoose2.model('Permisos');
 var multiFunct = require('../functions/exterFunct');//multiFunc llamaddo
+const ROOT_USER_MODULES = require('../acceso.json').rootUserModules;
 
 exports.getRootUser = function(req,res){
   getRootUserInt(req,res)
@@ -85,69 +86,7 @@ async function getRootUserInt (req, res) {
                       userId:userRoot.userId,
                       idperdats:userRoot.idperdats,
                       iduserdats:userRoot._id,
-                      modulos:[
-                        {name:"config",
-                        item:[
-                          {index:0,valor:true},
-                          {index:1,valor:true},
-                          {index:2,valor:true},
-                          {index:3,valor:true},
-                          {index:4,valor:true},
-                          {index:5,valor:true},
-                          {index:6,valor:true},
-                          {index:7,valor:true},
-                          {index:12,valor:true},
-                          {index:13,valor:true},
-                          {index:39,valor:true},
-                          {index:40,valor:true},
-                          {index:41,valor:true}
-                        ]},
-                        {name:"recepcion",
-                        item:[
-                          {index:8,valor:true},
-                          {index:9,valor:true},
-                          {index:10,valor:true},
-                          {index:11,valor:true},
-                          {index:14,valor:true},
-                          {index:15,valor:true},
-                          {index:16,valor:true},
-                          {index:18,valor:true},
-                        ]},
-                        {name:"regcont",
-                        item:[
-                          {index:17,valor:true},
-                          {index:19,valor:true},
-                          {index:20,valor:true},
-                          {index:21,valor:true},
-                          {index:22,valor:true},
-                          {index:23,valor:true},
-                          {index:28,valor:true},
-                          {index:29,valor:true},
-                          {index:30,valor:true},
-                          {index:31,valor:true}
-                        ]},
-                        {name:"direct",
-                        item:[
-                          {index:24,valor:true},
-                          {index:25,valor:true},
-                          {index:26,valor:true},
-                          {index:27,valor:true}
-                        ]},
-                        {name:"actmed",
-                        item:[
-                          
-                          {index:32,valor:true},
-                          {index:33,valor:true}
-                        ]},
-                        {name:"histmed",
-                        item:[
-                          {index:34,valor:true},
-                          {index:35,valor:true},
-                          {index:36,valor:true},
-                          {index:37,valor:true},
-                          {index:38,valor:true}
-                        ]}
-                      ],
+                      modulos: ROOT_USER_MODULES,
                       human:false
                     }
                     var newUserPer = new Permiso(data3);
@@ -201,69 +140,7 @@ async function getRootUserInt (req, res) {
                   userId:userRoot.userId,
                   idperdats:userRoot.idperdats,
                   iduserdats:userRoot._id,
-                  modulos:[
-                    {name:"config",
-                    item:[
-                      {index:0,valor:true},
-                      {index:1,valor:true},
-                      {index:2,valor:true},
-                      {index:3,valor:true},
-                      {index:4,valor:true},
-                      {index:5,valor:true},
-                      {index:6,valor:true},
-                      {index:7,valor:true},
-                      {index:12,valor:true},
-                      {index:13,valor:true},
-                      {index:39,valor:true},
-                      {index:40,valor:true},
-                      {index:41,valor:true}
-                    ]},
-                    {name:"recepcion",
-                    item:[
-                      {index:8,valor:true},
-                      {index:9,valor:true},
-                      {index:10,valor:true},
-                      {index:11,valor:true},
-                      {index:14,valor:true},
-                      {index:15,valor:true},
-                      {index:16,valor:true},
-                      {index:18,valor:true},
-                    ]},
-                    {name:"regcont",
-                    item:[
-                      {index:17,valor:true},
-                      {index:19,valor:true},
-                      {index:20,valor:true},
-                      {index:21,valor:true},
-                      {index:22,valor:true},
-                      {index:23,valor:true},
-                      {index:28,valor:true},
-                      {index:29,valor:true},
-                      {index:30,valor:true},
-                      {index:31,valor:true}
-                    ]},
-                    {name:"direct",
-                    item:[
-                      {index:24,valor:true},
-                      {index:25,valor:true},
-                      {index:26,valor:true},
-                      {index:27,valor:true}
-                    ]},
-                    {name:"actmed",
-                    item:[
-                      
-                      {index:32,valor:true},
-                      {index:33,valor:true}
-                    ]},
-                    {name:"histmed",
-                    item:[
-                      {index:34,valor:true},
-                      {index:35,valor:true},
-                      {index:36,valor:true},
-                      {index:37,valor:true},
-                      {index:38,valor:true}
-                    ]}
-                  ],
+                  modulos: ROOT_USER_MODULES,
                   human:false
                 }
                 var newUserPer = new Permiso(data3);
@@ -316,70 +193,7 @@ async function getRootUserInt (req, res) {
                 userId:user[0].userId,
                 idperdats:user[0].idperdats,
                 iduserdats:user[0]._id,
-                modulos:[
-                  {name:"config",
-                  item:[
-                    {index:0,valor:true},
-                    {index:1,valor:true},
-                    {index:2,valor:true},
-                    {index:3,valor:true},
-                    {index:4,valor:true},
-                    {index:5,valor:true},
-                    {index:6,valor:true},
-                    {index:7,valor:true},
-                    {index:12,valor:true},
-                    {index:13,valor:true},
-                    {index:39,valor:true},
-                    {index:40,valor:true},
-                    {index:41,valor:true}
-                  ]},
-                  {name:"recepcion",
-                  item:[
-                    {index:8,valor:true},
-                    {index:9,valor:true},
-                    {index:10,valor:true},
-                    {index:11,valor:true},
-                    {index:14,valor:true},
-                    {index:15,valor:true},
-                    {index:16,valor:true},
-                    {index:18,valor:true},
-                  ]},
-                  {name:"regcont",
-                  item:[
-                    {index:17,valor:true},
-                    {index:19,valor:true},
-                    {index:20,valor:true},
-                    {index:21,valor:true},
-                    {index:22,valor:true},
-                    {index:23,valor:true},
-                    {index:28,valor:true},
-                    {index:29,valor:true},
-                    {index:30,valor:true},
-                    {index:31,valor:true}
-                  ]},
-                  {name:"direct",
-                  item:[
-                    {index:24,valor:true},
-                    {index:25,valor:true},
-                    {index:26,valor:true},
-                    {index:27,valor:true}
-                  ]},
-                  {name:"actmed",
-                  item:[
-                    {index:30,valor:true},
-                    {index:31,valor:true},
-                    {index:32,valor:true},
-                    {index:33,valor:true}
-                  ]},
-                  {name:"histmed",
-                  item:[
-                    {index:34,valor:true},
-                    {index:35,valor:true},
-                    {index:36,valor:true},
-                    {index:37,valor:true},
-                    {index:38,valor:true}
-                  ]}
-                ],
+                modulos: ROOT_USER_MODULES,
                 human:false
               }
               var newUserPer = new Permiso(data3);

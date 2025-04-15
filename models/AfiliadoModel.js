@@ -87,14 +87,6 @@ var AfiliadoSchema = new Schema({
             type: String,
             default: "false"
         },
-        actDef:{
-            type: String,
-            default: "false"
-        },
-        autRet:{
-            type: String,
-            default: "false"
-        },
         partNacTit:{
             type: String,
             default: "false"
@@ -126,7 +118,15 @@ var AfiliadoSchema = new Schema({
         cedPadres:{
             type: String,
             default: "false"
-        }
+        },
+        actDef:{
+            type: String,
+            default: "false"
+        },
+        autRet:{
+            type: String,
+            default: "false"
+        },
     },
     obs: {
         type: String,
@@ -136,14 +136,14 @@ var AfiliadoSchema = new Schema({
         type: String,
         default:'AFILIADO'
     },
-    idUserDats: {
+    idUserDatsCreate: {
         type: mongoose.Schema.ObjectId,
         ref: 'Users',
         default:null
     },
-    idActu: {
+    idUserDatsUpdate: {
         type: mongoose.Schema.ObjectId,
-        ref: 'Updates',
+        ref: 'Users',
         default:null
     },
     status: {

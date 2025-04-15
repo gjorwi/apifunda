@@ -382,6 +382,7 @@ async function createAgendaInt (req, res) {
                     idModPago:val.idModPago,
                     idEspec:val.especialidad,
                     idprestdats:val.doctor,
+                    idUserDatsCreate: req.body._id,
                     fechAgen:val.fechAgen,
                     fechaPer:formatFech
                 }
@@ -442,82 +443,7 @@ async function createAgendaInt (req, res) {
     res.json(respuesta);
   }
 };
-exports.createMuniFile = function(req,res){
-  createMuniFileInt(req,res)
-  .catch(e => {
-    console.log('Problemas en el servidor ****: ' + e.message);
-    var respuesta = {
-      error: true,
-      codigo: 501,
-      mensaje: 'Problemas Internos, Contacte con el departamento de informatica createMuniFile'
-    };
-    res.json(respuesta);
-  });
-}
-async function createMuniFileInt (req, res) {
-  var prueba={
-    process:"Registrar Municipio File",
-    modulo:"config",
-    menuItem:6
-  }
-  if(req.body.acceso && req.body.result){
-    ///Verificar acceso
-    var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
-    // var control=true
-    if(!control){
-      var respuesta = {
-        error: true,
-        codigo: 501,
-        mensaje: 'No tiene acceso'
-      };
-      res.json(respuesta);
-    }
-    ////
-    else{
-      var val=req.body.result
-      var cont=0
-      var count=val.length
-      // val.forEach(async element => {
-      for(cont;cont<count;cont++){
-        try{
-          val[cont].muniName=val[cont].muniName.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()
-          var newMuni= new Muni(val[cont]);
-          const result2 = await Muni.findOne({muniName:val[cont].muniName}).exec();
-          if(!result2){
-            try {
-              let saveUser = await newMuni.save(); //when fail its goes to catch
-              // cont++
-              if(cont==count-1){
-                res.json({error:false,codigo:200,mensaje:"Carga de datos terminada",respuesta:[]})
-              }
-            } catch (err) {
-              // cont++
-              if(cont==count-1){
-                res.json({error:false,codigo:200,mensaje:"Carga de datos terminada",respuesta:[]})
-              }
-            }
-          }else{
-            // cont++
-            if(cont==count-1){
-              res.json({error:false,codigo:200,mensaje:"Carga de datos terminada",respuesta:[]})
-            }
-          }
-        }catch(err){
-          cont=count+1
-          res.json({error:true,codigo:500,mensaje:"Error al cargar el archivo",respuesta:[]})
-        }
-      }
-      // });
-    }
-  }else{
-    var respuesta = {
-      error: true,
-      codigo: 502,
-      mensaje: 'Faltan datos requeridos'
-    };
-    res.json(respuesta);
-  }
-};
+
 
 exports.updateAgenda = function(req,res){
   updateAgendaInt(req,res)
@@ -755,7 +681,7 @@ async function termAgendInt (req, res, next) {
       ////
       else{
         try{
-          let resultFind = await Agend.findOneAndUpdate({ _id: req.params.agendaId},{proceso:"visto"},{new:true}).exec()
+          let resultFind = await Agend.findOneAndUpdate({ _id: req.params.agendaId},{proceso:"visto",idUserDatsTerminated:req.body._id},{new:true}).exec()
           
           let exoPac=resultFind.pacientes.filter(e => e.typePac=='EXONERADO')
           exoPac?.forEach(async paciente => {
@@ -1031,7 +957,7 @@ async function deleteAgendaInt (req, res) {
     }
     ////
     else{
-      Agend.remove({ _id: req.params.agendaId}, async function (err, searchAgend) {
+      Agend.updateOne({ _id: req.params.agendaId}, {status:false}, async function (err, searchAgend) {
         if (err){
           var respuesta = {
             error: true,

@@ -45,7 +45,7 @@ module.exports = function (app) {
   app.route('/afiliado3/:afilId')
     .post(multiFunct.authenticateJWT,afil.readAfil3)
   app.route('/afiliado/updatesdat/:afilId')
-    // .post(multiFunct.authenticateJWT,afil.updateAfil)
+    // .post(multiFunct.authenticateJWT,afil.updateAfilDat)
     .put(multiFunct.authenticateJWT,afil.readAfilUpdatesDat)
   // app.route('/afiliadoUpdate/:afilId')
   //   .put(multiFunct.authenticateJWT,afil.updateAfil2)
@@ -59,6 +59,13 @@ module.exports = function (app) {
   /////// Liquidar Routes
   app.route('/liquidar')
     .post(multiFunct.authenticateJWT,liq.liquidar);
+// #####################################################################
+  var updatesDat = require('../controllers/UpdatesDatController');
+  /////// Updates Dat Routes
+  app.route('/updatesdat/:afilId')
+    .post(multiFunct.authenticateJWT,updatesDat.createUpdateAfil);
+  app.route('/updatesdat/all')
+    .put(multiFunct.authenticateJWT,updatesDat.readAllUpdatesDat);
 // #####################################################################
 
   var exo = require('../controllers/ExoneradoController');
@@ -132,6 +139,10 @@ var modpag = require('../controllers/ModpagController');
   app.route('/modpago')
     .put(multiFunct.authenticateJWT,modpag.getMod)
     .post(multiFunct.authenticateJWT,modpag.createMod);
+  app.route('/modpago/update/:modId')
+    .put(multiFunct.authenticateJWT,modpag.updateMod);
+  app.route('/modpago/delete/:modId')
+    .delete(multiFunct.authenticateJWT,modpag.deleteMod);
 
   app.route('/prestall')
     .put(multiFunct.authenticateJWT,modpag.getPrestAll)

@@ -121,14 +121,6 @@ var SolAfiliadoSchema = new Schema({
             type: String,
             default: "false"
         },
-        actDef:{
-            type: String,
-            default: "false"
-        },
-        autRet:{
-            type: String,
-            default: "false"
-        },
         partNacTit:{
             type: String,
             default: "false"
@@ -160,7 +152,15 @@ var SolAfiliadoSchema = new Schema({
         cedPadres:{
             type: String,
             default: "false"
-        }
+        },
+        actDef:{
+            type: String,
+            default: "false"
+        },
+        autRet:{
+            type: String,
+            default: "false"
+        },
     },
     obs: {
         type: String
@@ -181,7 +181,12 @@ var SolAfiliadoSchema = new Schema({
         type: String,
         default:"En espera de revisión"
     },
-    idUserDats: {
+    idUserDatsCreate: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Users',
+        default:null
+    },
+    idUserDatsUpdate: {
         type: mongoose.Schema.ObjectId,
         ref: 'Users',
         default:null

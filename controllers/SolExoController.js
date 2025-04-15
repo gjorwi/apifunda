@@ -157,6 +157,7 @@ async function createSolExoInt (req, res) {
                 parent:val.parent,
                 exoAddress:val.exoAddress,
                 reqDocAnex:val.reqDocAnex,
+                idUserDatsCreate: req.body._id,
                 idModPago:val.idModPago,
                 especName:val.especialidadName,
                 idServ:val.idServ,
@@ -250,6 +251,7 @@ async function createSolExoInt (req, res) {
                   idServ:val.idServ,
                   idSubServ:val.idSubServ,
                   reqDocAnex:val.reqDocAnex,
+                  idUserDatsCreate: req.body._id,
                   obs:val.obs,
                   parent:val.parent,
                   benSelect:val.benSelect
@@ -423,7 +425,7 @@ async function updateSolExoInt (req, res) {
         if(!resultFindSolExo){
           if(req.body.typeAprob==true){
             console.log("ID: "+req.params.solExoId)
-            let resultFind = await SolExo.findOneAndUpdate({ _id: req.params.solExoId,status:true,proceso: "pendiente"},{proceso:"aprobado",respaprob:req.body.respaprob},{new:true}).exec()
+            let resultFind = await SolExo.findOneAndUpdate({ _id: req.params.solExoId,status:true,proceso: "pendiente"},{proceso:"aprobado",respaprob:req.body.respaprob,idUserDatsUpdate: req.body.acceso},{new:true}).exec()
             console.log("RESULT FIND TRUE "+resultFind)
             let resultFindPer = await Perdat.findOne({ cedula: resultFind.exoId,status:true,human:true}).exec()
             
@@ -505,6 +507,7 @@ async function updateSolExoInt (req, res) {
                 idServ:resultFind.idServ,
                 idSubServ:resultFind.idSubServ,
                 reqDocAnex:resultFind.reqDocAnex,
+                idUserDatsCreate: req.body._id,
                 obs:resultFind.obs,
                 parent:resultFind.parent,
                 benSelect:resultFind.benSelect
@@ -522,7 +525,7 @@ async function updateSolExoInt (req, res) {
               res.json(respuesta);
             
           }else if(req.body.typeAprob==false){
-            let resultFind = await SolExo.findOneAndUpdate({ _id: req.params.solExoId,status:true,proceso: "pendiente"},{proceso:"rechazado",respaprob:req.body.respaprob},{new:true}).exec()
+            let resultFind = await SolExo.findOneAndUpdate({ _id: req.params.solExoId,status:true,proceso: "pendiente"},{proceso:"rechazado",idUserDatsUpdate: req.body.acceso,respaprob:req.body.respaprob},{new:true}).exec()
             var respuesta = {
               error: false,
               codigo: 200,

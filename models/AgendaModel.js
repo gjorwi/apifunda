@@ -73,7 +73,17 @@ var AgendaSchema = new Schema({
     type: Boolean,
     default:true
   },
-  idUserDats: {
+  idUserDatsCreate: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Users',
+    default:null
+  },
+  idUserDatsTerminated: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Users',
+    default:null
+  },
+  idUserDatsLiquido: {
     type: mongoose.Schema.ObjectId,
     ref: 'Users',
     default:null

@@ -1,4 +1,74 @@
 {
     "usuario":"fundadb",
-    "clave":"fundamutual2022.."
+    "clave":"fundamutual2022..",
+    "rootUserModules": {
+        "config": {
+        "items": [
+            {"index": 0, "value": true},
+            {"index": 1, "value": true},
+            {"index": 2, "value": true},
+            {"index": 3, "value": true},
+            {"index": 4, "value": true},
+            {"index": 5, "value": true},
+            {"index": 6, "value": true},
+            {"index": 7, "value": true},
+            {"index": 12, "value": true},
+            {"index": 13, "value": true},
+            {"index": 39, "value": true},
+            {"index": 40, "value": true},
+            {"index": 41, "value": true}
+        ]
+        },
+        "recepcion": {
+        "items": [
+            {"index": 8, "value": true},
+            {"index": 9, "value": true},
+            {"index": 10, "value": true},
+            {"index": 11, "value": true},
+            {"index": 14, "value": true},
+            {"index": 15, "value": true},
+            {"index": 16, "value": true},
+            {"index": 18, "value": true},
+            {"index": 42, "value": true},
+            {"index": 43, "value": true}
+        ]
+        },
+        "regcont": {
+        "items": [
+            {"index": 17, "value": true},
+            {"index": 19, "value": true},
+            {"index": 20, "value": true},
+            {"index": 21, "value": true},
+            {"index": 22, "value": true},
+            {"index": 23, "value": true},
+            {"index": 28, "value": true},
+            {"index": 29, "value": true},
+            {"index": 30, "value": true},
+            {"index": 31, "value": true}
+        ]
+        },
+        "direct": {
+        "items": [
+            {"index": 24, "value": true},
+            {"index": 25, "value": true},
+            {"index": 26, "value": true},
+            {"index": 27, "value": true}
+        ]
+        },
+        "actmed": {
+        "items": [
+            {"index": 32, "value": true},
+            {"index": 33, "value": true}
+        ]
+        },
+        "histmed": {
+        "items": [
+            {"index": 34, "value": true},
+            {"index": 35, "value": true},
+            {"index": 36, "value": true},
+            {"index": 37, "value": true},
+            {"index": 38, "value": true}
+        ]
+        }
+    }
 }

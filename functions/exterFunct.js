@@ -131,14 +131,37 @@ exports.checkUserAccess = async (id,modulo,menuItem) => {
         console.log("Check:"+id+" y "+menuItem)
         Permiso.find({userId:id}, async function (err, acceso) {
             console.log("Acceso: "+JSON.stringify(acceso))
-            if(acceso && acceso.length>0){
-                if(acceso[0].status==false)
-                resolve(false);
-                var resultFilterModulo= acceso[0].modulos.filter(e=>e.name==modulo)
-                var resultFilterMenuItem=resultFilterModulo[0].item.filter(e=>e.index==menuItem)
-                resolve(resultFilterMenuItem[0].valor)
-            }else{
-                console.log("No tiene permiso 4")
+            if(acceso && acceso.length > 0) {
+                console.log("Entro 1")
+                if(acceso[0].status === false) {
+                    return resolve(false);
+                }
+                console.log("Entro 2")
+                // Buscar el módulo por clave del objeto (el nombre del módulo es la key)
+                const moduloKey = Object.keys(acceso[0].modulos[0]).find(key => key === modulo);
+                console.log("Entro 3")
+                if (!moduloKey) {
+                    console.log(`Módulo ${modulo} no encontrado en permisos`);
+                    return resolve(false);
+                }
+                console.log("Entro 4")
+                const moduloObj = acceso[0].modulos[0][moduloKey];
+                console.log("Entro 5")
+                if (!moduloObj?.items) {
+                    console.log(`Estructura de items incorrecta en módulo ${modulo}`);
+                    return resolve(false);
+                }
+                console.log("Entro 6")
+                const itemMenu = moduloObj.items.find(item => item.index === menuItem);
+                
+                if (!itemMenu) {
+                    console.log(`Ítem de menú ${menuItem} no encontrado en módulo ${modulo}`);
+                    return resolve(false);
+                }
+                console.log("Entro 7")
+                resolve(itemMenu.value); // Nota: en tu estructura es 'value' no 'valor'
+            } else {
+                console.log("No se encontraron permisos para el usuario");
                 resolve(false);
             }
         }).populate('users', 'usuario');

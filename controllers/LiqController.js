@@ -105,6 +105,7 @@ async function liquidarInt (req, res) {
                       idafildats:paciente?.idafildats?paciente?.idafildats?._id:null,
                       idexodats:paciente?.idexodats?paciente?.idexodats?._id:null,
                       cedPac:paciente.idperdats.cedula,
+                      idUserDatsCreate:req.body._id,
                       pacType:paciente.typePac,
                       fechAten:allData.fechAgen,
                     }
@@ -117,7 +118,7 @@ async function liquidarInt (req, res) {
                   })
                 }
               }
-              let updateAgenda = await Agenda.findByIdAndUpdate(allData._id,{proceso:"liquidado"},{new:true}).exec()
+              let updateAgenda = await Agenda.findByIdAndUpdate(allData._id,{proceso:"liquidado",idUserDatsLiquido:req.body.acceso},{new:true}).exec()
               console.log("final")
               var respuesta = {
                   error: false,

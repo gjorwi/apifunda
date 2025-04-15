@@ -16,6 +16,195 @@ exports.getMod = function(req,res){
   });
 }
 
+exports.updateMod = function(req,res){
+  updateModInt(req,res)
+  .catch(e => {
+    console.log('Problemas en el servidor ****: ' + e.message);
+    var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica updateMod'
+    };
+    res.json(respuesta);
+  });
+}
+async function updateModInt (req, res) {
+  var prueba={
+    process:"Actualizar Modalidad de Pago",
+    modulo:"regcont",
+    menuItem:22
+  }
+  if(req.body.acceso && req.params.modId){
+    console.log("Entro bien-------------")
+    ///Verificar acceso
+    var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+    // var control=true
+    if(!control){
+      var respuesta = {
+        error: true,
+        codigo: 501,
+        mensaje: 'No tiene acceso'
+      };
+      res.json(respuesta);
+    }
+    ////
+    else{
+      try{
+        var val=req.body
+        //actualizar los datos de la modalidad de pago
+        // Verificar si ya existe un servicio registrado con las mismas condiciones
+        console.log("DATA: ", val.servicios);
+        console.log("MOD ID: ", req.params.modId);
+        console.log("VAL ID: ", val.idpresdats);
+        console.log("VAL ID SPEC: ", val.especId);
+        console.log("VAL cant: ", val.cantPac);
+
+        // Buscar coincidencia y obtener el servicio específico
+        const existingService = await ModPag.findOne({
+          idpresdats: val.idpresdats,
+          idEspec: val.especId,
+          status: true,
+          _id: { $ne: req.params.modId },
+          servicios: { $elemMatch: { $in: val.servicios } }
+        }).populate('servicios'); // Populate para obtener los detalles del servicio
+
+        // Encontrar qué servicio específico causó la coincidencia
+        const matchingService = existingService?.servicios?.find(s => 
+          val.servicios.some(vs => vs.toString() === s._id.toString())
+        );
+
+        console.log("EXISTING SERVICE: ", existingService);
+        if (existingService) {
+          var respuesta = {
+            error: false,
+            codigo: 500,
+            mensaje: `El servicio ${matchingService?.servName || 'seleccionado'} ya está registrado en otra modalidad de pago`,
+            respuesta: matchingService
+          };
+          return res.json(respuesta);
+        }
+        const data={
+          servicios:val.servicios,
+          typePag:val.typePag,
+          cantPac:val.cantPac,
+          costPac:val.costPac,
+        }
+        var updatevalue = { $set: data };
+        const result = await ModPag.updateOne(
+          { _id: req.params.modId },
+          updatevalue
+        );
+        console.log("UPDATE: ", result)
+        console.log('final')
+        var respuesta = {
+          error: false,
+          codigo: 200,
+          mensaje: 'Datos de la modalidad guardados con éxito',
+          respuesta:result
+        };
+        res.json(respuesta);
+        ////Funcion auditora
+        prueba.userId=req.body.acceso;
+        var control= await multiFunct.addAudit(prueba);
+        console.log("registrado")
+        ////
+      }catch(err){
+        console.log("Error: si"+JSON.stringify(err))
+        var respuesta = {
+          error: true,
+          codigo: 501,
+          mensaje: 'Error inesperado',
+          respuesta:err
+        };
+        res.json(respuesta);
+      }
+    }
+  }else{
+    var respuesta = {
+      error: true,
+      codigo: 502,
+      mensaje: 'Faltan datos requeridos'
+    };
+    res.json(respuesta);
+  }
+}
+exports.deleteMod = function(req,res){
+  deleteModInt(req,res)
+  .catch(e => {
+    console.log('Problemas en el servidor ****: ' + e.message);
+    var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica deleteMod'
+    };
+    res.json(respuesta);
+  });
+}
+async function deleteModInt (req, res) {
+  var prueba={
+    process:"Eliminar Modalidad de Pago",
+    modulo:"regcont",
+    menuItem:23
+  }
+  if(req.body.acceso && req.params.modId){
+    console.log("Entro bien-------------")
+    ///Verificar acceso
+    var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+    // var control=true
+    if(!control){
+      var respuesta = {
+        error: true,
+        codigo: 501,
+        mensaje: 'No tiene acceso'
+      };
+      res.json(respuesta);
+    }
+    ////
+    else{
+      try{
+        var val=req.body
+        console.log("MOD ID: ", req.params.modId);
+
+        var updatevalue = { $set: {status:false} };
+        const result = await ModPag.updateOne(
+          { _id: req.params.modId },
+          updatevalue
+        );
+        console.log("UPDATE: ", result)
+        console.log('final')
+        var respuesta = {
+          error: false,
+          codigo: 200,
+          mensaje: 'Datos de la modalidad desactivados con éxito',
+          respuesta:result
+        };
+        res.json(respuesta);
+        ////Funcion auditora
+        prueba.userId=req.body.acceso;
+        var control= await multiFunct.addAudit(prueba);
+        console.log("registrado")
+        ////
+      }catch(err){
+        console.log("Error: si"+JSON.stringify(err))
+        var respuesta = {
+          error: true,
+          codigo: 501,
+          mensaje: 'Error inesperado',
+          respuesta:err
+        };
+        res.json(respuesta);
+      }
+    }
+  }else{
+    var respuesta = {
+      error: true,
+      codigo: 502,
+      mensaje: 'Faltan datos requeridos'
+    };
+    res.json(respuesta);
+  }
+}
+
 async function getModInt(req, res) {
   console.log("ENTRO getPrest")
   var prueba={

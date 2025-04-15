@@ -64,7 +64,7 @@ var AtencionesSchema = new Schema({
     type: String,
     required: [true, 'Fecha de la atencion']
   },
-  idUserDats: {
+  idUserDatsCreate: {
     type: mongoose.Schema.ObjectId,
     ref: 'Users',
     default:null

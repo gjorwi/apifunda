@@ -76,6 +76,16 @@ var ExoneradoSchema = new Schema({
         type: String,
         default:"Fue aprobado"
     },
+    idUserDatsCreate: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Users',
+        default:null
+    },
+    idUserDatsUpdate: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Users',
+        default:null
+    },
     status: {
         type: Boolean,
         default:true

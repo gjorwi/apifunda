@@ -280,6 +280,7 @@ async function readSolAfilXlsxInt(req, res) {
                 docrecpag:true
               },
               obs:'',
+              // idUserDatsCreate: req.body._id,
               status:row.status=="ACTIVO"?true:false,
               Updated_date:formatearFecha(row.fechaactdats)
             }
@@ -405,6 +406,7 @@ async function createSolAfilInt (req, res) {
                 cedtit:val.cedTit,
                 parent:val.parent,
                 verifyMayores:val.verifyMayores,
+                idUserDatsCreate: req.body._id,
                 fechinglab:val.fechIngLab,
                 reqdocanex:val.reqDocAnex,
                 docanex:val.afiDocAnex,
@@ -674,6 +676,7 @@ async function updateSolAfilInt (req, res) {
                 resultFindAfiliadoUpdate.fechinglab=resultFind.fechinglab
                 resultFindAfiliadoUpdate.reqdocanex=resultFind.reqdocanex
                 resultFindAfiliadoUpdate.docanex=resultFind.docanex
+                resultFindAfiliadoUpdate.idUserDatsUpdate=req.body._id
                 resultFindAfiliadoUpdate.obs=resultFind.obs
                 resultFindAfiliadoUpdate.status=resultFind.statusAfil
                 // resultFindAfiliadoUpdate.Updated_date=new Date()
@@ -703,6 +706,7 @@ async function updateSolAfilInt (req, res) {
                   fechinglab:resultFind.fechinglab,
                   reqdocanex:resultFind.reqdocanex,
                   docanex:resultFind.docanex,
+                  idUserDatsCreate: req.body._id,
                   obs:resultFind.obs,
                   Updated_date:new Date()
                 }
