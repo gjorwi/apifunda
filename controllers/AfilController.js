@@ -3,7 +3,7 @@ var mongoose = require('../models/PerdatModel'),
 Perdat = mongoose.model('Perdats');
 var mongoose2 = require('../models/AfiliadoModel'),
 Afil = mongoose2.model('Afiliados');
-var mongoose3 = require('../models/UpdatesDatModel'),
+var mongoose3 = require('../models/UpdatesdataModel'),
 UpdatesDat = mongoose3.model('UpdatesDats');
 var multiFunct = require('../functions/exterFunct');//multiFunc llamaddo
 
@@ -15,7 +15,7 @@ exports.infoDat = function (req, res) {
    };
    res.json(respuesta);
 };
-
+ 
 exports.readAfil = function(req,res){
   readAfilInt(req,res)
   .catch(e => {
