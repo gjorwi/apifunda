@@ -318,7 +318,7 @@ async function readAfil3Int (req, res) {
                 error: false,
                 codigo: 201,
                 mensaje: 'No se encuentra afiliado, sin datos.',
-                respuesta:afildat
+                respuesta:[]
               };
               res.json(respuesta);
               return;
@@ -792,7 +792,6 @@ async function updateAfilDatsInt (req, res, next) {
               reqdocanex: req.body.reqDocAnex,
               idUserDatsCreate: req.body._id,
               idUserDatsUpdate: req.body._id,
-              Updated_date: new Date()
             });
             const resultSave2=await result4.save();
             console.log('Creado: '+JSON.stringify(resultSave2));

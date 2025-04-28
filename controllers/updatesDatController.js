@@ -138,7 +138,9 @@ async function updateDatsVerifyInt (req, res, next) {
               resAprob: req.body.res,
               proceso: req.body.typeAprob==true?"aprobado":"rechazado",
               idUserDatsUpdate: req.body._id,
-              Updated_date: new Date()
+            }
+            if(data.proceso=="aprobado"){
+              data.Updated_date=new Date()
             }
             const result = await UpdatesDat.updateOne(
               { _id: req.params.afilId,status:true},
