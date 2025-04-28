@@ -281,6 +281,17 @@ async function readcheckperInt (req, res) {
           if(titular) {
               // Verificar si el titular es contratado
               if(/CONTRATADO/i.test(titular.nomi)) {
+                const resultGet = await Exo.find({exoId:req.params.checkperId,status:true})
+                .populate('idperdats')
+                .populate('idModPago')
+                .populate({
+                  path: 'idModPago',
+                  populate: {
+                    path: 'idEspec'
+                  }
+                  })
+                .populate('idperdatsBen')
+                if(resultGet && resultGet?.length==0){
                   console.log("Titular es contratado - requiere exoneración");
                   return res.json({
                       error: false,
@@ -288,6 +299,14 @@ async function readcheckperInt (req, res) {
                       mensaje: 'El titular es contratado, requiere exoneracion',
                       respuesta: null
                   });
+                }
+                var respuesta = {
+                  error: false,
+                  codigo: 200,
+                  mensaje: 'Datos extraidos con exito',
+                  respuesta: resultGet
+                };
+                return res.json(respuesta);
               }
           } 
           else {

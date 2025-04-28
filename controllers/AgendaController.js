@@ -223,9 +223,9 @@ exports.getAgendaVist = function(req,res){
 async function getAgendaVistInt(req, res) {
   console.log("ENTRO getAgendaVist")
   var prueba={
-    process:"Consultar Agendas",
-    modulo:"histmed",
-    menuItem:36
+    process:"Consultar Agendas Vistas",
+    modulo:"regcont",
+    menuItem:44
   }
   if(req.body.acceso){
     ///Verificar acceso
@@ -247,6 +247,125 @@ async function getAgendaVistInt(req, res) {
       console.log("Fecha: "+JSON.stringify(formatFech))
       console.log("BUSQUEDA Agendas: "+JSON.stringify(req.body))
       Agend.find({status:true,proceso:"visto"})
+      .populate({
+        path: 'idModPago',
+        model: 'Modalidades',
+        populate: {
+            path: 'servicios',
+            model: 'Servicios'
+        }
+      })
+      .populate({
+        path: 'idEspec',
+        model: 'Especialidades'
+      })
+      .populate({
+        path: 'idModPago',
+        model: 'Modalidades',
+        populate: {
+            path: 'idEspec',
+            model: 'Especialidades'
+        }
+      })
+      .populate({
+        path: 'pacientes.servicios.idServ',
+        model: 'Servicios'
+      })
+      .populate({
+        path: 'pacientes.servicios.idSubServ',
+        model: 'Subservicios'
+      })
+      .populate('idprestdats')
+      .populate('pacientes.idperdats')
+      .populate('pacientes.idafildats')
+      .populate('pacientes.idexodats')
+      .sort({fechAgen:-1})
+      .exec( async function (err, agenddat) {
+        if (err){
+          var respuesta = {
+            error: true,
+            codigo: 501,
+            mensaje: 'Error inesperado',
+            respuesta:err
+          };
+          res.json(respuesta);
+        }
+        else{
+          console.log("BUSQUEDA agendas: "+JSON.stringify(agenddat))
+          if(agenddat && agenddat.length==0){
+            var respuesta = {
+              error: false,
+              codigo: 200,
+              mensaje: 'No se encuentran',
+              respuesta:agenddat
+            };
+            res.json(respuesta);
+          }else{
+            var respuesta = {
+              error: false,
+              codigo: 200,
+              mensaje: 'Datos de agendas extraidos con exito',
+              respuesta:agenddat
+            };
+            res.json(respuesta);
+            ////Funcion auditora
+            console.log("aqui")
+            prueba.userId=req.body.acceso;
+            var control= await multiFunct.addAudit(prueba);
+            ////
+          }
+        }
+      });
+    }
+  }
+  else{
+    var respuesta = {
+      error: true,
+      codigo: 502,
+      mensaje: 'Faltan datos requeridos'
+    };
+    res.json(respuesta);
+  }
+};
+exports.getAgendaLiq = function(req,res){
+  getAgendaLiqInt(req,res)
+  .catch(e => {
+    console.log('Problemas en el servidor ****: ' + e.message);
+    var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica getAgendaLiq'
+    };
+    res.json(respuesta);
+  });
+}
+
+async function getAgendaLiqInt(req, res) {
+  console.log("ENTRO getAgendaLiq")
+  var prueba={
+    process:"Consultar Agendas Liquidados",
+    modulo:"regcont",
+    menuItem:44
+  }
+  if(req.body.acceso && req.params.fecha){
+    ///Verificar acceso
+    var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+    console.log("VALOR CONTROL: "+control)
+    // var control=true
+    if(!control){
+      var respuesta = {
+        error: true,
+        codigo: 501,
+        mensaje: 'No tiene acceso'
+      };
+      res.json(respuesta);
+    }
+    ///
+    else{
+      var fechaNow=req.params.fecha
+      console.log("Fecha: "+JSON.stringify(fechaNow))
+      console.log("BUSQUEDA Agendas: "+JSON.stringify(req.body))
+      Agend.find({status:true,proceso:"liquidado",fechAgen:fechaNow})
       .populate({
         path: 'idModPago',
         model: 'Modalidades',
@@ -466,7 +585,7 @@ async function updateAgendaInt (req, res, next) {
   }
   if(req.body.acceso && req.params.agendaId ){
       ///Verificar acceso
-    
+      console.log("Verificar acceso NO ENTIENDOOOOO")
       var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
       // var control=true
       if(!control){

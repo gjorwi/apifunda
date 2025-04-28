@@ -3,6 +3,8 @@ var mongoose = require('../models/PerdatModel'),
 Perdat = mongoose.model('Perdats');
 var mongoose2 = require('../models/AfiliadoModel'),
 Afil = mongoose2.model('Afiliados');
+var mongoose3 = require('../models/UpdatesDatModel'),
+UpdatesDat = mongoose3.model('UpdatesDats');
 var multiFunct = require('../functions/exterFunct');//multiFunc llamaddo
 
 exports.infoDat = function (req, res) {
@@ -642,6 +644,164 @@ async function updateAfilInt (req, res, next) {
             codigo: 200,
             mensaje: 'Fecha Actualizada con éxito',
             respuesta:resultFind
+          };
+          res.json(respuesta);
+          ////Funcion auditora
+          prueba.userId=req.body.acceso;
+          var control= await multiFunct.addAudit(prueba);
+          console.log("registrado")
+          ////
+          
+
+        }catch(err){
+          var respuesta = {
+            error: true,
+            codigo: 501,
+            mensaje: 'Error inesperado',
+            respuesta:err
+          };
+          res.json(respuesta);
+        }
+      }
+  }else{
+      var respuesta = {
+          error: true,
+          codigo: 502,
+          mensaje: 'Faltan datos requeridos'
+      };
+      res.json(respuesta);
+  }
+};
+exports.updateAfilDats = function(req,res){
+  updateAfilDatsInt(req,res)
+  .catch(e => {
+      console.log('Problemas en el servidor ****: ' + e.message);
+      var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica updateAfilDats'
+      };
+      res.json(respuesta);
+  });
+}
+
+async function updateAfilDatsInt (req, res, next) {
+  var prueba={
+    process:"Actualizar datos afiliado",
+    modulo:"regcont",
+    menuItem:45
+  }
+  if(req.body.acceso && req.params.afilId ){
+      ///Verificar acceso
+    
+      var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+      // var control=true
+      if(!control){
+          var respuesta = {
+              error: true,
+              codigo: 501,
+              mensaje: 'No tiene acceso'
+          };
+          res.json(respuesta);
+      }
+      ////
+      else{
+        try{
+          const data={
+            cedula: req.body.afiCed2,
+            nombre: req.body.afiName,
+            apellido: req.body.afiLast,
+            birthday: req.body.afiBday,
+            correo: req.body.afiEmail,
+            telefono: req.body.afiCell,
+            sexo: req.body.afiSex,
+            estCiv: req.body.afiEstCiv,
+            parro: req.body.afiParro,
+            muni: req.body.afiMuni,
+            sect: req.body.afiSect,
+            direccion: req.body.afiAddress,
+            Updated_date: new Date()
+          }
+          const resultFind = await Perdat.findOne({ cedula: req.body.afiCed })
+          let changes = {};
+          for (const key in data) {
+            if (resultFind[key] !== undefined && resultFind[key] != data[key]) {
+              changes[key] = { old: resultFind[key], new: data[key] };
+            }
+          }
+          const result = await Perdat.updateOne(
+            { cedula: req.body.afiCed},
+            { $set: data }
+          );
+          console.log('Cambios en Perdat:', JSON.stringify(changes));
+          var departMod;
+          if(req.body.depart){
+            departMod = req.body.depart
+          }else{
+            departMod='NA'
+          }
+          var data2={
+            afilId:req.body.afiCed2,
+            depend:req.body.depend,
+            nomi:req.body.nomi,
+            depart:departMod,
+            type:req.body.type,
+            cedpad:req.body.cedPad,
+            cedmad:req.body.cedMad,
+            cedtit:req.body.cedTit,
+            parent:req.body.parent,
+            verifyMayores:req.body.verifyMayores,
+            idUserDatsCreate: req.body._id,
+            fechinglab:req.body.fechIngLab,
+            reqdocanex:req.body.reqDocAnex,
+            docanex:req.body.afiDocAnex,
+            statusAfil:req.body.statusAfil,
+            obs:req.body.obs,
+            condicion:req.body.condicion=="true"?true:false
+          }
+          const resultFind2 = await Afil.findOne({ _id: req.params.afilId })
+          let changes2 = {};
+          for (const key in data2) {
+            if (resultFind2[key] !== undefined && resultFind2[key] != data2[key]) {
+              changes2[key] = { old: resultFind2[key], new: data2[key] };
+            }
+          }
+          const result2 = await Afil.updateOne(
+            { _id: req.params.afilId},
+            { $set: data2 }
+          );
+          console.log('Cambios en Afil:', JSON.stringify(changes2));
+          const result3 = await UpdatesDat.findOne(
+            { afilId: req.body.afiCed,status:true,proceso:'pendiente'}
+          );
+          console.log('Result 3: '+JSON.stringify(result3));
+          if(result3){
+            result3.excentAprob=true;
+            result3.idUserDatsUpdate=req.body._id;
+            result3.Updated_date = new Date();
+            const resultSave=await result3.save();
+            console.log('Actualizado: '+JSON.stringify(resultSave));
+          }else{
+            const result4 = new UpdatesDat({
+              afilId: req.body.afiCed,
+              idAfilDats: req.params.afilId,
+              updateDescription: ' Cambios realizados al perfil '+JSON.stringify(changes) + ', Cambios realizados al afiliado '+JSON.stringify(changes2),
+              excentAprob: true,
+              proceso: 'aprobado',
+              docanex: req.body.afiDocAnex,
+              reqdocanex: req.body.reqDocAnex,
+              idUserDatsCreate: req.body._id,
+              idUserDatsUpdate: req.body._id,
+              Updated_date: new Date()
+            });
+            const resultSave2=await result4.save();
+            console.log('Creado: '+JSON.stringify(resultSave2));
+          }
+          var respuesta = {
+            error: false,
+            codigo: 200,
+            mensaje: 'Datos de afiliado actualizados con éxito',
+            respuesta:result2
           };
           res.json(respuesta);
           ////Funcion auditora

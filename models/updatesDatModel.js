@@ -2,6 +2,10 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var UpdatesDatSchema = new Schema({
+  afilId: {
+    type: String,
+    required: [true, 'Id de afiliado']
+  },
   idAfilDats: {
     type: mongoose.Schema.ObjectId,
     ref: 'Afiliados',
@@ -25,6 +29,10 @@ var UpdatesDatSchema = new Schema({
         default: false
     }
   },
+  updateDescription: {
+    type: String,
+    default: ""
+  },
   reqdocanex: {
       actMat:{
           type: String,
@@ -38,7 +46,7 @@ var UpdatesDatSchema = new Schema({
           type: String,
           default: "false"
       },
-      partNacTit:{
+      partNacHij:{
           type: String,
           default: "false"
       },
@@ -86,12 +94,16 @@ var UpdatesDatSchema = new Schema({
   },
   idUserDatsUpdate: {
     type: mongoose.Schema.ObjectId,
-    ref: 'Users',
+    ref: 'Users', 
     default:null
   },
   proceso: {
     type: String,
     default:"pendiente"
+  },
+  respaprob: {
+    type: String,
+    default:"En espera de revisión"
   },
   status: {
     type: Boolean,

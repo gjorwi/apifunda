@@ -121,7 +121,11 @@ var SolAfiliadoSchema = new Schema({
             type: String,
             default: "false"
         },
-        partNacTit:{
+        // partNacTit:{
+        //     type: String,
+        //     default: "false"
+        // },
+        partNacHij:{
             type: String,
             default: "false"
         },

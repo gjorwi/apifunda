@@ -118,7 +118,7 @@ async function liquidarInt (req, res) {
                   })
                 }
               }
-              let updateAgenda = await Agenda.findByIdAndUpdate(allData._id,{proceso:"liquidado",idUserDatsLiquido:req.body.acceso},{new:true}).exec()
+              let updateAgenda = await Agenda.findByIdAndUpdate(allData._id,{proceso:"liquidado",idUserDatsLiquido:req.body._id},{new:true}).exec()
               console.log("final")
               var respuesta = {
                   error: false,

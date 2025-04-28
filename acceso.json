@@ -44,7 +44,9 @@
             {"index": 28, "value": true},
             {"index": 29, "value": true},
             {"index": 30, "value": true},
-            {"index": 31, "value": true}
+            {"index": 31, "value": true},
+            {"index": 44, "value": true},
+            {"index": 45, "value": true}
         ]
         },
         "direct": {

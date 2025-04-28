@@ -129,6 +129,7 @@ exports.authenticateJWT = (req, res, next) => {
 exports.checkUserAccess = async (id,modulo,menuItem) => {
     return new Promise(async resolve => {
         console.log("Check:"+id+" y "+menuItem)
+        console.log("Modulo:"+modulo)
         Permiso.find({userId:id}, async function (err, acceso) {
             console.log("Acceso: "+JSON.stringify(acceso))
             if(acceso && acceso.length > 0) {
@@ -136,6 +137,7 @@ exports.checkUserAccess = async (id,modulo,menuItem) => {
                 if(acceso[0].status === false) {
                     return resolve(false);
                 }
+                
                 console.log("Entro 2")
                 // Buscar el módulo por clave del objeto (el nombre del módulo es la key)
                 const moduloKey = Object.keys(acceso[0].modulos[0]).find(key => key === modulo);
@@ -159,6 +161,8 @@ exports.checkUserAccess = async (id,modulo,menuItem) => {
                     return resolve(false);
                 }
                 console.log("Entro 7")
+                console.log("VALOR ITEM MENU: "+JSON.stringify(itemMenu))
+
                 resolve(itemMenu.value); // Nota: en tu estructura es 'value' no 'valor'
             } else {
                 console.log("No se encontraron permisos para el usuario");

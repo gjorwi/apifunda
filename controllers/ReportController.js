@@ -178,32 +178,50 @@ async function getReporte2Int(req, res) {
       //en req.body viene una variable llamada fecha que es un string con la fecha en formato "YYYY-MM-DD" quiero obtener una fecha de inicio y una fecha de fin para hacer la busqueda en la base de datos, donde fecha de inicio comienceel primero del mes y fecha de fin sea el ultimo dia del mes
       console.log(req.body.fecha);
       try{
-        // Obtener la fecha del cuerpo de la solicitud
         const fecha = new Date(req.body.fecha);
+        let fechaInicioStr;
+        let fechaFinStr;
+        if(req.body.typeReport=='2'||req.body.typeReport=='4'){
+          // Calcular la fecha de inicio (primer día del mes)
+          const fechaInicio = new Date(fecha.getFullYear(), fecha.getMonth(), 1);
 
-        // Calcular la fecha de inicio (primer día del mes)
-        const fechaInicio = new Date(fecha.getFullYear(), fecha.getMonth(), 1);
+          // Calcular la fecha de fin (último día del mes)
+          const fechaFin = new Date(fecha.getFullYear(), fecha.getMonth() + 1, 0);
 
-        // Calcular la fecha de fin (último día del mes)
-        const fechaFin = new Date(fecha.getFullYear(), fecha.getMonth() + 1, 0);
+          // Convertir las fechas a strings en el formato "YYYY-MM-DD"
+          fechaInicioStr = fechaInicio.toISOString().split('T')[0];
+          fechaFinStr = fechaFin.toISOString().split('T')[0];
 
-        // Convertir las fechas a strings en el formato "YYYY-MM-DD"
-        const fechaInicioStr = fechaInicio.toISOString().split('T')[0];
-        const fechaFinStr = fechaFin.toISOString().split('T')[0];
-
-        console.log(fechaInicioStr);
-        console.log(fechaFinStr);
-        let query;
-        if(req.body.typeReport=='1'){
-          query={
-            especCod: req.body.especCod,
-            fechAten: { $gte: fechaInicioStr, $lte: fechaFinStr }
-          }
-        }else {
-          query={
-            fechAten: { $gte: fechaInicioStr, $lte: fechaFinStr }
-          }
+          console.log(fechaInicioStr);
+          console.log(fechaFinStr);
         }
+        let query;
+        console.log(req.body.typeReport);
+        switch(req.body.typeReport) {
+          case '1':
+            query = {
+              especCod: req.body.especCod,
+              fechAten: req.body.fecha
+            };
+            break;
+          case '2':
+            query = {
+              especCod: req.body.especCod,
+              fechAten: { $gte: fechaInicioStr, $lte: fechaFinStr }
+            };
+            break;
+          case '3':
+            query = {
+              fechAten: req.body.fecha
+            };
+            break;
+          case '4':
+            query = {
+              fechAten: { $gte: fechaInicioStr, $lte: fechaFinStr }
+            };
+            break;
+        }
+        console.log(query);
         // Realizar la consulta a la base de datos utilizando las fechas calculadas
         const resultFindReportExt = await Atenciones.find(query)
         .populate({
@@ -224,6 +242,7 @@ async function getReporte2Int(req, res) {
         .populate('idexodats.idperdats')
         .populate('idexodats.idperdatsBen')
         .exec(function(err, resultFindReport){
+          console.log(JSON.stringify(resultFindReport));
           if(err){
             var respuesta = {
               error: true,
@@ -247,81 +266,6 @@ async function getReporte2Int(req, res) {
             ////
           }
         }); 
-        // let arrayQueryFact=[]
-        // let objectQuery={}
-        // let fecha=new Date(req.body.fechDes);
-        // let fecha2=new Date(req.body.fechHast);
-        // fecha2.setDate(fecha2.getDate() + 1)
-
-        // if(req.body.idServ!="0000"){
-        //   if(req.body.idDoctor!="0000"){
-        //     arrayQueryFact.push({servCod:req.body.servCod})
-        //     arrayQueryFact.push({cedPrest:req.body.doctorCod})
-        //     arrayQueryFact.push({createdAt:{$gte: fecha,$lte: fecha2}})
-        //     objectQuery={"$and":arrayQueryFact}
-        //   }else{
-        //     arrayQueryFact.push({servCod:req.body.servCod})
-        //     arrayQueryFact.push({servCod:req.body.servCod})
-        //     arrayQueryFact.push({createdAt:{$gte: fecha,$lte: fecha2}})
-        //     objectQuery={"$and":arrayQueryFact}
-        //   }
-        // }else{
-        //   if(req.body.idDoctor!="0000"){
-        //     arrayQueryFact.push({cedPrest:req.body.doctorCod})
-        //     arrayQueryFact.push({cedPrest:req.body.doctorCod})
-        //     arrayQueryFact.push({createdAt:{$gte: fecha,$lte: fecha2}})
-        //     objectQuery={"$and":arrayQueryFact}
-        //     console.log("EL ULTIMO")
-        //   }else{
-        //     arrayQueryFact.push({createdAt:{$gte: fecha,$lte: fecha2}})
-        //     objectQuery={"$and":arrayQueryFact}
-        //   }
-        // }
-
-        // let resultFindFact = await 
-        //   Factura
-        //     .aggregate()
-        //     .match(objectQuery)
-        //     // .project(
-        //     //   {
-        //     //     numbFact: 1,
-        //     //     idservdats:1 ,
-        //     //     idprestdats:1 ,
-        //     //     cedPrest:1 ,
-        //     //     servCod:1 ,
-        //     //     payType:1 ,
-        //     //     costPac:1 ,
-        //     //     status:1 ,
-        //     //     pacientes: {
-        //     //       "$filter": {
-        //     //         "input": "$pacientes",
-        //     //         "as": "paciente",
-        //     //         "cond": {
-        //     //           "$and":[{"$gte":["$$paciente.fechaPer",fecha]},{"$lte":["$$paciente.fechaPer",fecha2]}]
-        //     //         }
-        //     //       }
-        //     //     }
-        //     //   }
-        //     // )
-        //     .exec()
-        // await Servicios.populate(resultFindFact, {path: "idservdats"});
-        // await Prestadores.populate(resultFindFact, {path: "idprestdats"});
-        // await Modalidades.populate(resultFindFact, {path: "idModPago"});
-        // await Afiliados.populate(resultFindFact, {path: "idafildats"});
-        // await Exonerados.populate(resultFindFact, {path: "idexodats"});
-        // await Perdats.populate(resultFindFact, [{path: "idperdats"},{path: "idafildats.idtitdats"},{path: "idexodats.idperdatsBen"},{path: "idexodats.idperdats"}]);
-        // var respuesta = {
-        //   error: false,
-        //   codigo: 200,
-        //   mensaje: 'Datos de reporte extraidos con éxito',
-        //   respuesta:resultFindReport
-        // };
-        // res.json(respuesta);
-        // ////Funcion auditora
-        // prueba.userId=req.body.acceso;
-        // var control= await multiFunct.addAudit(prueba);
-        ////
-        
       }catch(err){
         var respuesta = {
           error: true,

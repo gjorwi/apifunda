@@ -44,6 +44,8 @@ module.exports = function (app) {
     .post(multiFunct.authenticateJWT,afil.readAfil2)
   app.route('/afiliado3/:afilId')
     .post(multiFunct.authenticateJWT,afil.readAfil3)
+  app.route('/afiliado/update/:afilId')
+    .post(multiFunct.authenticateJWT,afil.updateAfilDats)
   app.route('/afiliado/updatesdat/:afilId')
     // .post(multiFunct.authenticateJWT,afil.updateAfilDat)
     .put(multiFunct.authenticateJWT,afil.readAfilUpdatesDat)
@@ -60,10 +62,12 @@ module.exports = function (app) {
   app.route('/liquidar')
     .post(multiFunct.authenticateJWT,liq.liquidar);
 // #####################################################################
-  var updatesDat = require('../controllers/UpdatesDatController');
+  var updatesDat = require('../controllers/updatesDatController');
   /////// Updates Dat Routes
   app.route('/updatesdat/:afilId')
     .post(multiFunct.authenticateJWT,updatesDat.createUpdateAfil);
+  app.route('/updatesdat/verificar/:afilId')
+    .put(multiFunct.authenticateJWT,updatesDat.updateDatsVerify);
   app.route('/updatesdat/all')
     .put(multiFunct.authenticateJWT,updatesDat.readAllUpdatesDat);
 // #####################################################################
@@ -186,8 +190,10 @@ var modpag = require('../controllers/ModpagController');
     .post(multiFunct.authenticateJWT,agenda.updateAgendaPer)
   app.route('/agendater/:agendaId')
     .put(multiFunct.authenticateJWT,agenda.termAgend)
-  app.route('/agendavist')
+  app.route('/agendavisto')
     .put(multiFunct.authenticateJWT,agenda.getAgendaVist)
+  app.route('/agendaliquidado/:fecha')
+    .put(multiFunct.authenticateJWT,agenda.getAgendaLiq)
 // #####################################################################
 
   var checkper = require('../controllers/CheckperController');
