@@ -232,16 +232,22 @@ async function readcheckperInt (req, res) {
         console.log("DATA AFILIADO: "+JSON.stringify(afildat))
         if(afildat && afildat?.length==0){
           console.log("NO AFILIADO")
-          const resultGet = await Exo.find({exoId:req.params.checkperId,status:true})
-            .populate('idperdats')
-            .populate('idModPago')
-            .populate({
-              path: 'idModPago',
-              populate: {
-                path: 'idEspec'
-              }
-              })
-            .populate('idperdatsBen')
+          const resultGet = await Exo.find({
+            $or: [
+              { exoId: req.params.checkperId },
+              { cedBen: req.params.checkperId }
+            ],
+            status: true
+          })
+          .populate('idperdats')
+          .populate('idModPago')
+          .populate({
+            path: 'idModPago',
+            populate: {
+              path: 'idEspec'
+            }
+          })
+          .populate('idperdatsBen')
           if(resultGet && resultGet?.length==0){
             var respuesta = {
               error: false,
@@ -335,13 +341,43 @@ async function readcheckperInt (req, res) {
                   );
 
                   if(titularesInvalidos) {
-                      console.log("Titular de beneficiario inválido - requiere exoneración");
+                    // const resultGet = await Exo.find({exoId:req.params.checkperId,status:true})
+                    // .populate('idperdats')
+                    // .populate('idperdatsBen')
+                    // if(resultGet && resultGet?.length==0){
+                    //   console.log("Titular de beneficiario inválido - requiere exoneración");
+                    //   return res.json({
+                    //       error: false,
+                    //       codigo: 200,
+                    //       mensaje: 'El titular del beneficiario no cumple los requisitos',
+                    //     respuesta: null
+                    // });
+                    const resultGet = await Exo.find({$or:[{exoId:req.params.checkperId},{cedBen:req.params.checkperId}],status:true})
+                    .populate('idperdats')
+                    .populate('idModPago')
+                    .populate({
+                      path: 'idModPago',
+                      populate: {
+                        path: 'idEspec'
+                      }
+                    })
+                    .populate('idperdatsBen')
+                    if(resultGet && resultGet?.length==0){
+                      console.log("Titular es contratado - requiere exoneración");
                       return res.json({
                           error: false,
                           codigo: 200,
-                          mensaje: 'El titular del beneficiario no cumple los requisitos',
+                          mensaje: 'El titular es contratado, requiere exoneracion',
                           respuesta: null
                       });
+                    }
+                    var respuesta = {
+                      error: false,
+                      codigo: 200,
+                      mensaje: 'Datos extraidos con exito',
+                      respuesta: resultGet
+                    };
+                    return res.json(respuesta);
                   }
               }
           }

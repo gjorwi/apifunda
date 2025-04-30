@@ -727,6 +727,7 @@ async function getAgendaServPacInt (req, res, next) {
       ////
       else{
         try{
+          console.log("Datos: entro  bien")
           const result = await Agend.updateOne(
             { _id: req.params.agendaId, 'pacientes._id': req.body.pacienteId },
             { $set: { 'pacientes.$.servicios': req.body.servicios } }
@@ -753,6 +754,7 @@ async function getAgendaServPacInt (req, res, next) {
             mensaje: 'Error inesperado',
             respuesta:err
           };
+          console.log("Error: "+JSON.stringify(respuesta))
           res.json(respuesta);
         }
       }

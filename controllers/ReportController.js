@@ -286,3 +286,162 @@ async function getReporte2Int(req, res) {
     res.json(respuesta);
   }
 };
+exports.getReporte3 = function(req,res){
+  getReporte3Int(req,res)
+  .catch(e => {
+    console.log('Problemas en el servidor ****: ' + e.message);
+    var respuesta = {
+      error: true,
+      codigo: 501,
+      mensaje: 'Problemas Internos, Contacte con el departamento de informatica getReporte3'
+    };
+    res.json(respuesta);
+  });
+}
+
+async function getReporte3Int(req, res) {
+  var prueba={
+    process:"Crear Reporte2",
+    modulo:"regcont",
+    menuItem:21
+  }
+  if(req.body.acceso){
+    //Verificar acceso
+    var control= await multiFunct.checkUserAccess(req.body.acceso,prueba.modulo,prueba.menuItem);
+    // var control=true
+    if(!control){
+      var respuesta = {
+        error: true,
+        codigo: 501,
+        mensaje: 'No tiene acceso'
+      };
+      res.json(respuesta);
+      return
+    }
+    ///
+    else{
+      //en req.body viene una variable llamada fecha que es un string con la fecha en formato "YYYY-MM-DD" quiero obtener una fecha de inicio y una fecha de fin para hacer la busqueda en la base de datos, donde fecha de inicio comienceel primero del mes y fecha de fin sea el ultimo dia del mes
+      console.log(req.body.fecha);
+      try{
+        const fecha = new Date(req.body.fecha);
+        let fechaInicioStr;
+        let fechaFinStr;
+        if(req.body.typeReport=='2'){
+          // Calcular la fecha de inicio (primer día del mes)
+          const fechaInicio = new Date(fecha.getFullYear(), fecha.getMonth(), 1);
+
+          // Calcular la fecha de fin (último día del mes)
+          const fechaFin = new Date(fecha.getFullYear(), fecha.getMonth() + 1, 0);
+
+          // Convertir las fechas a strings en el formato "YYYY-MM-DD"
+          fechaInicioStr = fechaInicio.toISOString().split('T')[0];
+          fechaFinStr = fechaFin.toISOString().split('T')[0];
+
+          console.log(fechaInicioStr);
+          console.log(fechaFinStr);
+        }
+        let query;
+        console.log(req.body.typeReport);
+        switch(req.body.typeReport) {
+          case '1':
+            query = {
+              cedPrest: req.body.doctorCod,
+              fechAten: req.body.fecha
+            };
+            break;
+          case '2':
+            query = {
+              cedPrest: req.body.doctorCod,
+              fechAten: { $gte: fechaInicioStr, $lte: fechaFinStr }
+            };
+            break;
+        }
+        console.log(query);
+        // Realizar la consulta a la base de datos utilizando las fechas calculadas
+        const resultFindReportExt = await Atenciones.find(query)
+        .populate({
+          path: 'idModPago',
+          model: 'Modalidades',
+          populate: {
+              path: 'servicios',
+              model: 'Servicios'
+          }
+        })
+        .populate('idprestdats')
+        .populate('idserv')
+        .populate('idsubserv')
+        .populate({
+          path: 'idafildats',
+          populate: [{
+            path: 'idperdats'
+          }, {
+            path: 'idtitdats'
+          }]
+        })
+        .populate({
+          path: 'idexodats',
+          populate: [{
+            path: 'idperdats'
+          }, {
+            path: 'idperdatsBen'
+          }]
+        })
+        .lean()
+        .exec()
+        console.log(JSON.stringify(resultFindReportExt));
+        var respuesta = {
+          error: false,
+          codigo: 200,
+          mensaje: 'Datos de reporte extraidos con éxito',
+          respuesta:resultFindReportExt
+        };
+        res.json(respuesta);
+        ////Funcion auditora
+        prueba.userId=req.body.acceso;
+        var control= multiFunct.addAudit(prueba);
+        ////
+        // .exec(function(err, resultFindReport){
+        //   console.log(JSON.stringify(resultFindReport));
+        //   if(err){
+        //     var respuesta = {
+        //       error: true,
+        //       codigo: 501,
+        //       mensaje: 'Error inesperado',
+        //       respuesta:err
+        //     };
+        //     res.json(respuesta);
+        //     return
+        //   }else{
+        //     var respuesta = {
+        //       error: false,
+        //       codigo: 200,
+        //       mensaje: 'Datos de reporte extraidos con éxito',
+        //       respuesta:resultFindReport
+        //     };
+        //     res.json(respuesta);
+        //     ////Funcion auditora
+        //     prueba.userId=req.body.acceso;
+        //     var control= multiFunct.addAudit(prueba);
+        //     ////
+        //   }
+        // }); 
+      }catch(err){
+        var respuesta = {
+          error: true,
+          codigo: 501,
+          mensaje: 'Error inesperado',
+          respuesta:err
+        };
+        res.json(respuesta);
+      }
+    }
+  }
+  else{
+    var respuesta = {
+      error: true,
+      codigo: 502,
+      mensaje: 'Faltan datos requeridos'
+    };
+    res.json(respuesta);
+  }
+};

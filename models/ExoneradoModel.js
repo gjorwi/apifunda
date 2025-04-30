@@ -16,13 +16,17 @@ var ExoneradoSchema = new Schema({
         ref: 'Perdats',
         required: [true, 'Dependencia']
     },
+    cedBen:{
+        type: String,
+        required: [true, 'Cedula beneficiario']
+    },
     depend: {
         type: String,
-        required: [false, 'Dependencia']
+        default:''
     },
     parent: {
         type: String,
-        required: [true, 'Parentesco']
+        default:''
     },
     benSelect: {
         type: String,
@@ -59,6 +63,7 @@ var ExoneradoSchema = new Schema({
     },
     other: {
         type: String,
+        default:''
     },
     identificador: {
         type: String,
@@ -66,7 +71,7 @@ var ExoneradoSchema = new Schema({
     },
     obs: {
         type: String,
-        required: [true, 'Observacion']
+        default:''
     },
     proceso: {
         type: String,

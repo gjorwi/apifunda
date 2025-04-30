@@ -242,7 +242,8 @@ async function createSolExoInt (req, res) {
                 console.log("RESULT id: "+_id)
                 console.log("RESULT idBen: "+_idBen)
                 var data2={
-                  exoId:val.exoBenCed,
+                  exoId:val.exoCed,
+                  cedBen:val.exoBenCed,
                   idperdats:_id,
                   idperdatsBen:_idBen,
                   depend:val.depend,

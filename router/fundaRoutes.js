@@ -34,6 +34,8 @@ module.exports = function (app) {
     .put(multiFunct.authenticateJWT,reportes.getReporte1)
   app.route('/reporte2')
     .put(multiFunct.authenticateJWT,reportes.getReporte2)
+  app.route('/reporte3')
+    .put(multiFunct.authenticateJWT,reportes.getReporte3)
 // #####################################################################
 
   var afil = require('../controllers/AfilController');

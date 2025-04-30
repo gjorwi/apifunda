@@ -36,20 +36,23 @@ var SolExoneradoSchema = new Schema({
     },
     exoSect: {
         type: String,
-        required: [true, 'Sector de la persona']
+        default:''
     },
     exoAddress: {
-        type: String
+        type: String,
+        default:''
     },
     exoBday:{
         type: Date,
         required: [true, 'Fecha de nacimiento de la persona']
     },
     exoEmail:{
-        type: String
+        type: String,
+        default:''
     },
     exoCell:{
-        type: String
+        type: String,
+        default:''
     },
     human:{
         type:Boolean,
@@ -76,10 +79,12 @@ var SolExoneradoSchema = new Schema({
         required: [true, 'Fecha de nacimiento de la persona beneficiaria']
     },
     depend: {
-        type: String
+        type: String,
+        default:''
     },
     parent: {
-        type: String
+        type: String,
+        default:''
     },
     benSelect: {
         type: String,
@@ -117,9 +122,11 @@ var SolExoneradoSchema = new Schema({
     },
     other: {
         type: String,
+        default:''
     },
     obs: {
-        type: String
+        type: String,
+        default:''
     },
     status: {
         type: Boolean,
