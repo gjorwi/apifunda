@@ -16,10 +16,6 @@ var ExoneradoSchema = new Schema({
         ref: 'Perdats',
         required: [true, 'Dependencia']
     },
-    cedBen:{
-        type: String,
-        required: [true, 'Cedula beneficiario']
-    },
     depend: {
         type: String,
         default:''
