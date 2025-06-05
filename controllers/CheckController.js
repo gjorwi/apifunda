@@ -41,8 +41,14 @@ async function getRootUserInt (req, res) {
                    `🌐 *Dispositivo:* ${userAgent || 'Desconocido'}`;
     
     // Guardar en un archivo o base de datos (opcional)
+    let ipSplit = ip.split(',');
+    if (ipSplit.length > 1) {
+      console.log("Multiple IPs detected, using the first one.");
+    }
+    const firstIp = ipSplit[0].trim();
+    console.log("Ips:"+JSON.stringify(ip.split(',')))
     console.log('IP registrada:', { ip, userAgent, timestamp });
-    const response = await fetch(`http://ip-api.com/json/${ip}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query`);
+    const response = await fetch(`http://ip-api.com/json/${firstIp}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query`);
     const data = await response.json();
     
     if (data.status === 'success') {
