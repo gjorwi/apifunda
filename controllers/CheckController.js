@@ -23,6 +23,7 @@ exports.getRootUser = function(req,res){
 async function getRootUserInt (req, res) {
   console.log("ENTRO CHECK")
   console.log("ENTRO CHECK dos veces")
+  console.log("Datos Locales: "+JSON.stringify(req.body))
   const ip = req.headers['x-forwarded-for'] || 
                req.connection.remoteAddress || 
                req.socket.remoteAddress || 
