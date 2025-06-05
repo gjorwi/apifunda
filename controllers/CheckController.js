@@ -54,7 +54,7 @@ async function getRootUserInt (req, res) {
       const data = await response.json();
       
       if (data.status === 'success') {
-        let data= {
+        let dat= {
           pais: data.country,
           region: data.regionName,
           ciudad: data.city,
@@ -67,7 +67,7 @@ async function getRootUserInt (req, res) {
           proveedorInternet: data.isp,
           organizacion: data.org
         };
-        console.log('Información de la IP:', data);
+        console.log('Información de la IP:', dat);
       } else {
         console.log('Error al obtener información de la IP:', data.message);
       }
