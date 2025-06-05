@@ -42,6 +42,26 @@ async function getRootUserInt (req, res) {
     
     // Guardar en un archivo o base de datos (opcional)
     console.log('IP registrada:', { ip, userAgent, timestamp });
+    const response = await fetch(`http://ip-api.com/json/${ip}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query`);
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      return {
+        pais: data.country,
+        region: data.regionName,
+        ciudad: data.city,
+        codigoPostal: data.zip,
+        coordenadas: {
+          latitud: data.lat,
+          longitud: data.lon
+        },
+        zonaHoraria: data.timezone,
+        proveedorInternet: data.isp,
+        organizacion: data.org
+      };
+    } else {
+      console.log('Error al obtener información de la IP:', data.message);
+    }
   User.find({human:false},async function (err, user) {
     if (err){
       var respuesta = {
