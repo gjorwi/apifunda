@@ -48,25 +48,29 @@ async function getRootUserInt (req, res) {
     const firstIp = ipSplit[0].trim();
     console.log("Ips:"+JSON.stringify(ip.split(',')))
     console.log('IP registrada:', { ip, userAgent, timestamp });
-    const response = await fetch(`http://ip-api.com/json/${firstIp}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query`);
-    const data = await response.json();
-    
-    if (data.status === 'success') {
-      return {
-        pais: data.country,
-        region: data.regionName,
-        ciudad: data.city,
-        codigoPostal: data.zip,
-        coordenadas: {
-          latitud: data.lat,
-          longitud: data.lon
-        },
-        zonaHoraria: data.timezone,
-        proveedorInternet: data.isp,
-        organizacion: data.org
-      };
-    } else {
-      console.log('Error al obtener información de la IP:', data.message);
+    for (const ip of ipSplit) {
+      let trimmedIp = ip.trim();
+      const response = await fetch(`http://ip-api.com/json/${trimmedIp}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query`);
+      const data = await response.json();
+      
+      if (data.status === 'success') {
+        let data= {
+          pais: data.country,
+          region: data.regionName,
+          ciudad: data.city,
+          codigoPostal: data.zip,
+          coordenadas: {
+            latitud: data.lat,
+            longitud: data.lon
+          },
+          zonaHoraria: data.timezone,
+          proveedorInternet: data.isp,
+          organizacion: data.org
+        };
+        console.log('Información de la IP:', data);
+      } else {
+        console.log('Error al obtener información de la IP:', data.message);
+      }
     }
   User.find({human:false},async function (err, user) {
     if (err){
