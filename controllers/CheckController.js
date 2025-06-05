@@ -23,6 +23,25 @@ exports.getRootUser = function(req,res){
 async function getRootUserInt (req, res) {
   console.log("ENTRO CHECK")
   console.log("ENTRO CHECK dos veces")
+  const ip = req.headers['x-forwarded-for'] || 
+               req.connection.remoteAddress || 
+               req.socket.remoteAddress || 
+               (req.connection.socket ? req.connection.socket.remoteAddress : null);
+    
+    const userAgent = req.headers['user-agent'];
+    const timestamp = new Date().toISOString();
+    
+    // Número de teléfono (con código de país, sin +)
+    const phoneNumber = '1234567890'; // Reemplaza con tu número
+    
+    // Mensaje que se enviará por WhatsApp
+    const message = `🚨 *Nueva Visita* %0A` +
+                   `📱 *IP:* ${ip}%0A` +
+                   `📅 *Fecha y Hora:* ${new Date().toLocaleString()}%0A` +
+                   `🌐 *Dispositivo:* ${userAgent || 'Desconocido'}`;
+    
+    // Guardar en un archivo o base de datos (opcional)
+    console.log('IP registrada:', { ip, userAgent, timestamp });
   User.find({human:false},async function (err, user) {
     if (err){
       var respuesta = {
